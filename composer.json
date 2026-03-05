@@ -1,0 +1,47 @@
+{
+    "name": "jeffersongoncalves/filament-action-export",
+    "description": "Export Filament tables to CSV, XLSX and PDF with preview and print support.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": ["filament", "export", "csv", "xlsx", "pdf", "laravel", "livewire"],
+    "require": {
+        "php": "^8.1",
+        "barryvdh/laravel-dompdf": "^2.0",
+        "filament/filament": "^3.0",
+        "livewire/livewire": "^3.0",
+        "spatie/simple-excel": "^3.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^8.0",
+        "pestphp/pest": "^2.0",
+        "pestphp/pest-plugin-laravel": "^2.0"
+    },
+    "suggest": {
+        "barryvdh/laravel-snappy": "Required for Snappy PDF driver support."
+    },
+    "autoload": {
+        "psr-4": {
+            "JeffersonGoncalves\\FilamentExportAction\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "JeffersonGoncalves\\FilamentExportAction\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "JeffersonGoncalves\\FilamentExportAction\\FilamentExportServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

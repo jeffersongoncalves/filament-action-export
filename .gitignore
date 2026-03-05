@@ -1,0 +1,12 @@
+/vendor/
+/node_modules/
+composer.lock
+.phpunit.result.cache
+.phpunit.cache/
+.idea/
+.vscode/
+.claude/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
