@@ -19,7 +19,7 @@ Export Filament tables to **CSV**, **XLSX** and **PDF** with preview and print s
 |---------|----------|--------|------------------|----------|
 | ^1.0    | ^3.0     | ^8.1   | ^10.0 \| ^11.0   | ^3.0     |
 | ^2.0    | ^4.0     | ^8.2   | ^11.0            | ^3.0     |
-| ^3.0    | ^5.0     | ^8.2   | ^11.0            | ^4.0     |
+| ^3.0    | ^5.0     | ^8.2   | ^11.28           | ^4.0     |
 
 > This is the **`2.x`** branch, compatible with **Filament v4**.
 
@@ -31,22 +31,6 @@ The `2.x` branch introduces a unified `ExportAction` replacing the separate `Fil
 
 ```bash
 composer require jeffersongoncalves/filament-action-export "^2.0"
-```
-
-### Register the Plugin (optional)
-
-```php
-use JeffersonGoncalves\FilamentExportAction\FilamentExportPlugin;
-
-public function panel(Panel $panel): Panel
-{
-    return $panel
-        ->plugins([
-            FilamentExportPlugin::make()
-                ->defaultFormat('xlsx')
-                ->pdfDriver('dompdf'),
-        ]);
-}
 ```
 
 ### Publish config (optional)
@@ -135,6 +119,33 @@ public function table(Table $table): Table
 ->defaultFormat(ExportFormat::Xlsx)
 ```
 
+### File Name
+
+```php
+// Custom file name
+->fileName('my-report')
+
+// File name prefix (prepended to the name)
+->fileNamePrefix('users')
+
+// Custom time format for the filename suffix
+->timeFormat('d_m_Y-H_i')
+
+// Disable file name input in the modal
+->disableFileName()
+
+// Full control via closure
+->fileNameUsing(fn ($action) => 'custom-' . now()->format('Y-m-d'))
+```
+
+### Direct Download
+
+Skip the modal form and download immediately with default settings:
+
+```php
+->directDownload()
+```
+
 ### Columns
 
 ```php
@@ -146,6 +157,9 @@ public function table(Table $table): Table
 
 // Let users choose columns in the modal
 ->userCanSelectColumns()
+
+// Include hidden (toggled) columns in the export
+->withHiddenColumns()
 ```
 
 ### Additional Columns
@@ -159,6 +173,28 @@ public function table(Table $table): Table
         ->label('Notes')
         ->defaultValue('N/A'),
 ])
+```
+
+### Format States
+
+Custom formatting for column values:
+
+```php
+->formatStates([
+    'name' => fn ($value, $record) => strtoupper($value),
+    'created_at' => fn ($value) => Carbon::parse($value)->format('d/m/Y'),
+    'status' => fn ($value) => match ($value) {
+        'active' => 'Active',
+        'inactive' => 'Inactive',
+        default => $value,
+    },
+])
+```
+
+### CSV Delimiter
+
+```php
+->csvDelimiter(';')  // Default: ','
 ```
 
 ### PDF Driver
@@ -178,6 +214,18 @@ composer require barryvdh/laravel-snappy
 
 // Custom PDF options
 ->pdfOptions(['paper' => 'a4', 'orientation' => 'landscape'])
+```
+
+### Writer Callbacks
+
+Customize the Excel or PDF writer before the file is generated:
+
+```php
+// Modify the SimpleExcelWriter (CSV/XLSX)
+->modifyExcelWriter(fn (SimpleExcelWriter $writer) => $writer)
+
+// Modify the PDF instance (DomPDF or Snappy)
+->modifyPdfWriter(fn ($pdf) => $pdf->setWarnings(false))
 ```
 
 ### Extra View Data
@@ -219,6 +267,7 @@ return [
     'pdf_driver'      => env('FILAMENT_EXPORT_PDF_DRIVER', 'dompdf'),
     'default_format'  => env('FILAMENT_EXPORT_DEFAULT_FORMAT', 'xlsx'),
     'formats'         => ['csv', 'xlsx', 'pdf'],
+    'csv_delimiter'   => ',',
     'chunk_size'      => 1000,
     'pdf_options'     => [
         'paper'       => 'a4',
@@ -239,7 +288,9 @@ After publishing the views, you can customize them:
 
 ## Translations
 
-The package includes English and Brazilian Portuguese translations. After publishing, add your own translations in `lang/vendor/filament-action-export/`.
+The package includes translations for: English, Brazilian Portuguese, Spanish, French, German, Italian, Dutch, Arabic, and Turkish.
+
+After publishing, add your own translations in `lang/vendor/filament-action-export/`.
 
 ## Migrating from 1.x
 
@@ -268,19 +319,6 @@ $table->toolbarActions([
 $table->headerActions([
     ExportAction::make('export'),
 ]);
-```
-
-### Plugin Registration (new in v2)
-
-```php
-use JeffersonGoncalves\FilamentExportAction\FilamentExportPlugin;
-
-// In your PanelProvider
-->plugins([
-    FilamentExportPlugin::make()
-        ->defaultFormat('xlsx')
-        ->pdfDriver('dompdf'),
-])
 ```
 
 ### Filament v4 Table Method Changes

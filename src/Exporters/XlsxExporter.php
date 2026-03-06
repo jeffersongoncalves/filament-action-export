@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace JeffersonGoncalves\FilamentExportAction\Exporters;
 
+use Closure;
 use Illuminate\Support\Collection;
 use JeffersonGoncalves\FilamentExportAction\Exporters\Contracts\Exporter;
 use Spatie\SimpleExcel\SimpleExcelWriter;
@@ -11,6 +12,15 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class XlsxExporter implements Exporter
 {
+    protected ?Closure $writerCallback = null;
+
+    public function modifyWriter(Closure $callback): static
+    {
+        $this->writerCallback = $callback;
+
+        return $this;
+    }
+
     /** @param array<string, string> $columns */
     public function export(Collection $records, array $columns, string $filename): StreamedResponse
     {
@@ -29,6 +39,10 @@ class XlsxExporter implements Exporter
                 $row[] = data_get($record, $key, '');
             }
             $writer->addRow($row);
+        }
+
+        if ($this->writerCallback !== null) {
+            ($this->writerCallback)($writer);
         }
 
         $writer->close();
