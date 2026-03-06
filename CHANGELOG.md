@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## v2.2.0 - 2026-03-06
+
+### What's Changed
+
+#### New Features
+
+- **`disableTableColumns()`** — Ignore table columns entirely and use only additional columns for fully custom exports
+- **`disableFileNamePrefix()`** — Control the filename prefix independently (disable prefix without hiding the filename input)
+- **`withFilters()` / `withSearch()` / `withSort()` logic** — Now actually connected to the table's filtered/sorted query (previously declared but non-functional)
+- **Configurable icons via config** — Set action, preview, export, print, and cancel icons globally in config
+- **`use_snappy` global config** — Enable Snappy PDF driver globally without calling `->snappy()` on each action
+- Explicit `pdfDriver()` / `snappy()` takes priority over global config
+
+**Full Changelog**: https://github.com/jeffersongoncalves/filament-action-export/compare/v2.1.0...v2.2.0
+
 ## v2.1.0 - 2026-03-06
 
 ### What's New
