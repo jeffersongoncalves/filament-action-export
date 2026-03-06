@@ -23,50 +23,10 @@ Export Filament tables to **CSV**, **XLSX** and **PDF** with preview and print s
 
 > This is the **`3.x`** branch, compatible with **Filament v5** (Livewire v4).
 
-## Upgrading from v2.x
-
-The `3.x` branch upgrades to **Filament v5** with **Livewire v4** support. The API remains identical to v2.x — no code changes are needed beyond updating the package version.
-
-### Livewire v4 Changes
-
-If you use the preview component in custom views, update `<livewire:>` tags to be self-closing:
-
-```blade
-{{-- Before (Livewire v3) --}}
-<livewire:filament-action-export.export-preview
-    :records="$records"
-    :columns="$columns"
-    :extra-data="$extraData"
->
-
-{{-- After (Livewire v4) --}}
-<livewire:filament-action-export.export-preview
-    :records="$records"
-    :columns="$columns"
-    :extra-data="$extraData"
-/>
-```
-
 ## Installation
 
 ```bash
 composer require jeffersongoncalves/filament-action-export "^3.0"
-```
-
-### Register the Plugin (optional)
-
-```php
-use JeffersonGoncalves\FilamentExportAction\FilamentExportPlugin;
-
-public function panel(Panel $panel): Panel
-{
-    return $panel
-        ->plugins([
-            FilamentExportPlugin::make()
-                ->defaultFormat('xlsx')
-                ->pdfDriver('dompdf'),
-        ]);
-}
 ```
 
 ### Publish config (optional)
@@ -155,6 +115,33 @@ public function table(Table $table): Table
 ->defaultFormat(ExportFormat::Xlsx)
 ```
 
+### File Name
+
+```php
+// Custom file name
+->fileName('my-report')
+
+// File name prefix (prepended to the name)
+->fileNamePrefix('users')
+
+// Custom time format for the filename suffix
+->timeFormat('d_m_Y-H_i')
+
+// Disable file name input in the modal
+->disableFileName()
+
+// Full control via closure
+->fileNameUsing(fn ($action) => 'custom-' . now()->format('Y-m-d'))
+```
+
+### Direct Download
+
+Skip the modal form and download immediately with default settings:
+
+```php
+->directDownload()
+```
+
 ### Columns
 
 ```php
@@ -166,6 +153,9 @@ public function table(Table $table): Table
 
 // Let users choose columns in the modal
 ->userCanSelectColumns()
+
+// Include hidden (toggled) columns in the export
+->withHiddenColumns()
 ```
 
 ### Additional Columns
@@ -179,6 +169,28 @@ public function table(Table $table): Table
         ->label('Notes')
         ->defaultValue('N/A'),
 ])
+```
+
+### Format States
+
+Custom formatting for column values:
+
+```php
+->formatStates([
+    'name' => fn ($value, $record) => strtoupper($value),
+    'created_at' => fn ($value) => Carbon::parse($value)->format('d/m/Y'),
+    'status' => fn ($value) => match ($value) {
+        'active' => 'Active',
+        'inactive' => 'Inactive',
+        default => $value,
+    },
+])
+```
+
+### CSV Delimiter
+
+```php
+->csvDelimiter(';')  // Default: ','
 ```
 
 ### PDF Driver
@@ -198,6 +210,18 @@ composer require barryvdh/laravel-snappy
 
 // Custom PDF options
 ->pdfOptions(['paper' => 'a4', 'orientation' => 'landscape'])
+```
+
+### Writer Callbacks
+
+Customize the Excel or PDF writer before the file is generated:
+
+```php
+// Modify the SimpleExcelWriter (CSV/XLSX)
+->modifyExcelWriter(fn (SimpleExcelWriter $writer) => $writer)
+
+// Modify the PDF instance (DomPDF or Snappy)
+->modifyPdfWriter(fn ($pdf) => $pdf->setWarnings(false))
 ```
 
 ### Extra View Data
@@ -239,6 +263,7 @@ return [
     'pdf_driver'      => env('FILAMENT_EXPORT_PDF_DRIVER', 'dompdf'),
     'default_format'  => env('FILAMENT_EXPORT_DEFAULT_FORMAT', 'xlsx'),
     'formats'         => ['csv', 'xlsx', 'pdf'],
+    'csv_delimiter'   => ',',
     'chunk_size'      => 1000,
     'pdf_options'     => [
         'paper'       => 'a4',
@@ -259,7 +284,9 @@ After publishing the views, you can customize them:
 
 ## Translations
 
-The package includes English and Brazilian Portuguese translations. After publishing, add your own translations in `lang/vendor/filament-action-export/`.
+The package includes translations for: English, Brazilian Portuguese, Spanish, French, German, Italian, Dutch, Arabic, and Turkish.
+
+After publishing, add your own translations in `lang/vendor/filament-action-export/`.
 
 ## Testing
 

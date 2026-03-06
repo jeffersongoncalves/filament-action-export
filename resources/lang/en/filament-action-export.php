@@ -12,6 +12,10 @@ return [
         'columns' => 'Columns',
         'default_value' => 'Default Value',
         'select_all' => 'Select all',
+        'file_name' => 'File Name',
+        'page_orientation' => 'Page Orientation',
+        'orientation_portrait' => 'Portrait',
+        'orientation_landscape' => 'Landscape',
     ],
     'messages' => [
         'exporting' => 'Exporting...',

@@ -16,6 +16,8 @@ trait HasExportColumns
 
     protected bool $canSelectColumns = false;
 
+    protected bool $withHiddenColumns = false;
+
     /** @param array<string> $columns */
     public function columns(array $columns): static
     {
@@ -39,6 +41,13 @@ trait HasExportColumns
         return $this;
     }
 
+    public function withHiddenColumns(bool $enabled = true): static
+    {
+        $this->withHiddenColumns = $enabled;
+
+        return $this;
+    }
+
     /**
      * @return array<string, string> key = field name, value = column label
      */
@@ -57,7 +66,11 @@ trait HasExportColumns
             }
         } else {
             $columns = [];
-            foreach ($table->getColumns() as $column) {
+            $tableColumns = $this->withHiddenColumns
+                ? $table->getColumns()
+                : $table->getVisibleColumns();
+
+            foreach ($tableColumns as $column) {
                 $name = $column->getName();
                 $columns[$name] = $column->getLabel() ?: $name;
             }
