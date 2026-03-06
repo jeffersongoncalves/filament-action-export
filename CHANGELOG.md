@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file.
 
+## v3.1.0 - 2026-03-06
+
+### What's New
+
+#### New Features
+
+- **File Name Control**: Custom file name, prefix, time format, and closure support
+- **Direct Download**: Skip the modal and download with default settings
+- **CSV Delimiter**: Configurable CSV separator (default: comma)
+- **Format States**: Per-column value formatting with closures
+- **Writer Callbacks**: Modify Excel/PDF writers before generation
+- **With Hidden Columns**: Include toggled columns in export
+- **Page Orientation**: Reactive PDF orientation selector (portrait/landscape)
+- **Removed FilamentExportPlugin**: Actions are configured per-resource, no plugin needed
+
+#### Improvements
+
+- 7 new translation files: Spanish, French, German, Italian, Dutch, Arabic, Turkish
+- Added csv_delimiter to config file
+- Reactive form fields (format selector shows orientation only for PDF)
+
+#### Compatibility
+
+- Filament v5
+- PHP ^8.2
+- Laravel ^11.0
+- Livewire ^4.0
+
 ## v3.0.0 - 2026-03-06
 
 ### Filament Action Export v3.0.0
