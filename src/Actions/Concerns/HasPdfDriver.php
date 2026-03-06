@@ -35,7 +35,15 @@ trait HasPdfDriver
 
     public function getPdfDriver(): string
     {
-        return $this->pdfDriverName ?? config('filament-action-export.pdf_driver', 'dompdf');
+        if ($this->pdfDriverName !== null) {
+            return $this->pdfDriverName;
+        }
+
+        if (config('filament-action-export.use_snappy', false)) {
+            return 'snappy';
+        }
+
+        return config('filament-action-export.pdf_driver', 'dompdf');
     }
 
     /** @return array<string, mixed> */
