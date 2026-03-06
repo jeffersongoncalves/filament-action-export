@@ -11,7 +11,7 @@ it('exports records to csv with correct headers and rows', function () {
         ['name' => 'Bob', 'email' => 'bob@example.com'],
     ]);
     $columns = ['name' => 'Nome', 'email' => 'E-mail'];
-    $exporter = new CsvExporter();
+    $exporter = new CsvExporter;
     $response = $exporter->export($records, $columns, 'test');
 
     expect($response)->toBeInstanceOf(StreamedResponse::class);
@@ -21,7 +21,7 @@ it('exports records to csv with correct headers and rows', function () {
 it('handles empty collection gracefully', function () {
     $records = collect([]);
     $columns = ['name' => 'Nome', 'email' => 'E-mail'];
-    $exporter = new CsvExporter();
+    $exporter = new CsvExporter;
     $response = $exporter->export($records, $columns, 'test');
 
     expect($response)->toBeInstanceOf(StreamedResponse::class);
@@ -32,7 +32,7 @@ it('respects column order in output', function () {
         ['email' => 'alice@example.com', 'name' => 'Alice'],
     ]);
     $columns = ['name' => 'Nome', 'email' => 'E-mail'];
-    $exporter = new CsvExporter();
+    $exporter = new CsvExporter;
     $response = $exporter->export($records, $columns, 'test');
 
     expect($response)->toBeInstanceOf(StreamedResponse::class);

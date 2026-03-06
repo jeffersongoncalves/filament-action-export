@@ -1,0 +1,13 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - src
+
+    level: 5
+
+    ignoreErrors:
+        - '#Unsafe usage of new static#'
+        - '#Parameter \#1 \$view of function view expects view-string\|null, string given#'
+        - '#should return static\(.+\) but returns#'

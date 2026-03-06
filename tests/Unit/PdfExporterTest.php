@@ -11,7 +11,7 @@ it('exports records to pdf with correct mime type', function () {
         ['name' => 'Bob', 'email' => 'bob@example.com'],
     ]);
     $columns = ['name' => 'Nome', 'email' => 'E-mail'];
-    $exporter = new PdfExporter();
+    $exporter = new PdfExporter;
     $response = $exporter->export($records, $columns, 'test');
 
     expect($response)->toBeInstanceOf(StreamedResponse::class);
@@ -21,7 +21,7 @@ it('exports records to pdf with correct mime type', function () {
 it('handles empty collection gracefully', function () {
     $records = collect([]);
     $columns = ['name' => 'Nome'];
-    $exporter = new PdfExporter();
+    $exporter = new PdfExporter;
     $response = $exporter->export($records, $columns, 'test');
 
     expect($response)->toBeInstanceOf(StreamedResponse::class);
@@ -32,7 +32,7 @@ it('accepts extra view data', function () {
         ['name' => 'Alice'],
     ]);
     $columns = ['name' => 'Nome'];
-    $exporter = (new PdfExporter())->extraViewData(['companyName' => 'Acme Corp']);
+    $exporter = (new PdfExporter)->extraViewData(['companyName' => 'Acme Corp']);
     $response = $exporter->export($records, $columns, 'test');
 
     expect($response)->toBeInstanceOf(StreamedResponse::class);
@@ -41,7 +41,7 @@ it('accepts extra view data', function () {
 it('accepts custom pdf options', function () {
     $records = collect([['name' => 'Alice']]);
     $columns = ['name' => 'Nome'];
-    $exporter = (new PdfExporter())->pdfOptions(['paper' => 'letter', 'orientation' => 'landscape']);
+    $exporter = (new PdfExporter)->pdfOptions(['paper' => 'letter', 'orientation' => 'landscape']);
     $response = $exporter->export($records, $columns, 'test');
 
     expect($response)->toBeInstanceOf(StreamedResponse::class);

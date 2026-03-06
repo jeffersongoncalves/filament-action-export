@@ -27,7 +27,7 @@ class FilamentExportServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         FilamentAsset::register([
-            Css::make(static::$name, __DIR__ . '/../resources/dist/filament-action-export.css'),
+            Css::make(static::$name, __DIR__.'/../resources/dist/filament-action-export.css'),
         ], 'jeffersongoncalves/filament-action-export');
 
         Livewire::component('filament-action-export.export-preview', ExportPreview::class);
