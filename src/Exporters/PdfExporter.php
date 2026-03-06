@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace JeffersonGoncalves\FilamentExportAction\Exporters;
 
+use Closure;
 use Illuminate\Support\Collection;
 use JeffersonGoncalves\FilamentExportAction\Exporters\Contracts\Exporter;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -17,6 +18,8 @@ class PdfExporter implements Exporter
 
     /** @var array<string, mixed> */
     protected array $extraViewData = [];
+
+    protected ?Closure $writerCallback = null;
 
     public function driver(string $driver): static
     {
@@ -41,6 +44,13 @@ class PdfExporter implements Exporter
         return $this;
     }
 
+    public function modifyWriter(Closure $callback): static
+    {
+        $this->writerCallback = $callback;
+
+        return $this;
+    }
+
     /** @param array<string, string> $columns */
     public function export(Collection $records, array $columns, string $filename): StreamedResponse
     {
@@ -59,6 +69,10 @@ class PdfExporter implements Exporter
         } else {
             $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadHTML($html)
                 ->setPaper($paper, $orientation);
+        }
+
+        if ($this->writerCallback !== null) {
+            ($this->writerCallback)($pdf);
         }
 
         $content = $pdf->output();

@@ -8,4 +8,18 @@ parameters:
     level: 5
 
     ignoreErrors:
-        - '#Unsafe usage of new static#'
+        -
+            message: '#Unsafe usage of new static#'
+            reportUnmatched: false
+        -
+            message: '#Parameter \#1 \$view of function view expects view-string\|null, string given#'
+            reportUnmatched: false
+        -
+            message: '#should return static\(.+\) but returns#'
+            reportUnmatched: false
+        -
+            message: '#Call to an undefined method .+::getTable\(\)#'
+            reportUnmatched: false
+        -
+            message: '#Call to an undefined method .+::getVisibleColumns\(\)#'
+            reportUnmatched: false

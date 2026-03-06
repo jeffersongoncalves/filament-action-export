@@ -112,11 +112,36 @@ public function table(Table $table): Table
 
 ### Formats
 
-Control which export formats are available:
-
 ```php
 ->formats([ExportFormat::Csv, ExportFormat::Xlsx, ExportFormat::Pdf])
 ->defaultFormat(ExportFormat::Xlsx)
+```
+
+### File Name
+
+```php
+// Custom file name
+->fileName('my-report')
+
+// File name prefix (prepended to the name)
+->fileNamePrefix('users')
+
+// Custom time format for the filename suffix
+->timeFormat('d_m_Y-H_i')
+
+// Disable file name input in the modal
+->disableFileName()
+
+// Full control via closure
+->fileNameUsing(fn ($action) => 'custom-' . now()->format('Y-m-d'))
+```
+
+### Direct Download
+
+Skip the modal form and download immediately with default settings:
+
+```php
+->directDownload()
 ```
 
 ### Columns
@@ -130,11 +155,12 @@ Control which export formats are available:
 
 // Let users choose columns in the modal
 ->userCanSelectColumns()
+
+// Include hidden (toggled) columns in the export
+->withHiddenColumns()
 ```
 
 ### Additional Columns
-
-Add extra columns that don't exist in the table:
 
 ```php
 ->additionalColumns([
@@ -145,6 +171,28 @@ Add extra columns that don't exist in the table:
         ->label('Notes')
         ->defaultValue('N/A'),
 ])
+```
+
+### Format States
+
+Custom formatting for column values:
+
+```php
+->formatStates([
+    'name' => fn ($value, $record) => strtoupper($value),
+    'created_at' => fn ($value) => Carbon::parse($value)->format('d/m/Y'),
+    'status' => fn ($value) => match ($value) {
+        'active' => 'Active',
+        'inactive' => 'Inactive',
+        default => $value,
+    },
+])
+```
+
+### CSV Delimiter
+
+```php
+->csvDelimiter(';')  // Default: ','
 ```
 
 ### PDF Driver
@@ -166,9 +214,19 @@ composer require barryvdh/laravel-snappy
 ->pdfOptions(['paper' => 'a4', 'orientation' => 'landscape'])
 ```
 
-### Extra View Data
+### Writer Callbacks
 
-Pass additional data to the PDF/print views:
+Customize the Excel or PDF writer before the file is generated:
+
+```php
+// Modify the SimpleExcelWriter (CSV/XLSX)
+->modifyExcelWriter(fn (SimpleExcelWriter $writer) => $writer)
+
+// Modify the PDF instance (DomPDF or Snappy)
+->modifyPdfWriter(fn ($pdf) => $pdf->setWarnings(false))
+```
+
+### Extra View Data
 
 ```php
 // Static array
@@ -214,6 +272,7 @@ return [
         'paper'       => 'a4',
         'orientation' => 'portrait',
     ],
+    'csv_delimiter'   => ',',
     'preview_enabled' => true,
     'print_enabled'   => true,
 ];
@@ -229,7 +288,7 @@ After publishing the views, you can customize them:
 
 ## Translations
 
-The package includes English and Brazilian Portuguese translations. After publishing, add your own translations in `lang/vendor/filament-action-export/`.
+The package includes translations for 9 languages: English, Brazilian Portuguese, Spanish, French, German, Italian, Dutch, Arabic and Turkish. After publishing, add your own translations in `lang/vendor/filament-action-export/`.
 
 ## Testing
 
