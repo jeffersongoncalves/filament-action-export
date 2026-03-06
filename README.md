@@ -1,6 +1,6 @@
 # Filament Action Export
 
-[![Tests](https://github.com/jeffersongoncalves/filament-action-export/actions/workflows/tests.yml/badge.svg?branch=2.x)](https://github.com/jeffersongoncalves/filament-action-export/actions/workflows/tests.yml)
+[![Tests](https://github.com/jeffersongoncalves/filament-action-export/actions/workflows/tests.yml/badge.svg?branch=3.x)](https://github.com/jeffersongoncalves/filament-action-export/actions/workflows/tests.yml)
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/jeffersongoncalves/filament-action-export.svg?style=flat-square)](https://packagist.org/packages/jeffersongoncalves/filament-action-export)
 [![Total Downloads](https://img.shields.io/packagist/dt/jeffersongoncalves/filament-action-export.svg?style=flat-square)](https://packagist.org/packages/jeffersongoncalves/filament-action-export)
 [![License](https://img.shields.io/packagist/l/jeffersongoncalves/filament-action-export.svg?style=flat-square)](LICENSE.md)
@@ -13,18 +13,38 @@ Export Filament tables to **CSV**, **XLSX** and **PDF** with preview and print s
 |---------|----------|--------|------------------|----------|
 | ^1.0    | ^3.0     | ^8.1   | ^10.0 \| ^11.0   | ^3.0     |
 | ^2.0    | ^4.0     | ^8.2   | ^11.0            | ^3.0     |
-| ^3.0    | ^5.0     | ^8.2   | ^11.0            | ^4.0     |
+| ^3.0    | ^5.0     | ^8.2   | ^11.28           | ^4.0     |
 
-> This is the **`2.x`** branch, compatible with **Filament v4**.
+> This is the **`3.x`** branch, compatible with **Filament v5** (Livewire v4).
 
-## Upgrading from v1.x
+## Upgrading from v2.x
 
-The `2.x` branch introduces a unified `ExportAction` replacing the separate `FilamentExportBulkAction` and `FilamentExportHeaderAction`. See the [migration section](#migrating-from-1x) below.
+The `3.x` branch upgrades to **Filament v5** with **Livewire v4** support. The API remains identical to v2.x — no code changes are needed beyond updating the package version.
+
+### Livewire v4 Changes
+
+If you use the preview component in custom views, update `<livewire:>` tags to be self-closing:
+
+```blade
+{{-- Before (Livewire v3) --}}
+<livewire:filament-action-export.export-preview
+    :records="$records"
+    :columns="$columns"
+    :extra-data="$extraData"
+>
+
+{{-- After (Livewire v4) --}}
+<livewire:filament-action-export.export-preview
+    :records="$records"
+    :columns="$columns"
+    :extra-data="$extraData"
+/>
+```
 
 ## Installation
 
 ```bash
-composer require jeffersongoncalves/filament-action-export "^2.0"
+composer require jeffersongoncalves/filament-action-export "^3.0"
 ```
 
 ### Register the Plugin (optional)
@@ -234,60 +254,6 @@ After publishing the views, you can customize them:
 ## Translations
 
 The package includes English and Brazilian Portuguese translations. After publishing, add your own translations in `lang/vendor/filament-action-export/`.
-
-## Migrating from 1.x
-
-### Action Classes
-
-```php
-// Before (v1.x - Filament v3)
-use JeffersonGoncalves\FilamentExportAction\Actions\FilamentExportBulkAction;
-use JeffersonGoncalves\FilamentExportAction\Actions\FilamentExportHeaderAction;
-
-$table->bulkActions([
-    FilamentExportBulkAction::make('export'),
-]);
-$table->headerActions([
-    FilamentExportHeaderAction::make('export'),
-]);
-
-// After (v2.x - Filament v4)
-use JeffersonGoncalves\FilamentExportAction\Actions\ExportAction;
-
-$table->toolbarActions([
-    Actions\BulkActionGroup::make([
-        ExportAction::make('export'),
-    ]),
-]);
-$table->headerActions([
-    ExportAction::make('export'),
-]);
-```
-
-### Plugin Registration (new in v2)
-
-```php
-use JeffersonGoncalves\FilamentExportAction\FilamentExportPlugin;
-
-// In your PanelProvider
-->plugins([
-    FilamentExportPlugin::make()
-        ->defaultFormat('xlsx')
-        ->pdfDriver('dompdf'),
-])
-```
-
-### Filament v4 Table Method Changes
-
-```php
-// v3
-->actions([...])
-->bulkActions([...])
-
-// v4
-->recordActions([...])
-->toolbarActions([...])
-```
 
 ## Testing
 

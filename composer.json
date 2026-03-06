@@ -7,14 +7,14 @@
     "require": {
         "php": "^8.2",
         "barryvdh/laravel-dompdf": "^2.0|^3.0",
-        "filament/filament": "^4.0",
+        "filament/filament": "^5.0",
         "spatie/laravel-package-tools": "^1.13",
         "spatie/simple-excel": "^3.0"
     },
     "require-dev": {
-        "orchestra/testbench": "^9.0",
-        "pestphp/pest": "^2.0|^3.0",
-        "pestphp/pest-plugin-laravel": "^2.0|^3.0"
+        "orchestra/testbench": "^10.0|^11.0",
+        "pestphp/pest": "^3.0",
+        "pestphp/pest-plugin-laravel": "^3.0"
     },
     "suggest": {
         "barryvdh/laravel-snappy": "Required for Snappy PDF driver support."

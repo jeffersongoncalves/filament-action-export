@@ -21,6 +21,7 @@ abstract class TestCase extends OrchestraTestCase
     protected function getPackageProviders($app): array
     {
         return [
+            \Livewire\LivewireServiceProvider::class,
             \Barryvdh\DomPDF\ServiceProvider::class,
             FilamentExportServiceProvider::class,
         ];
