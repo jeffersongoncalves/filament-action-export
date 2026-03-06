@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## v3.3.0 - 2026-03-06
+
+### What's Changed
+
+#### New Features
+
+- **FilamentExportBulkAction**: Table bulk action for exporting selected records
+- **FilamentExportHeaderAction**: Table header action with `withFilters()`, `withSearch()`, and `withSort()` support
+
+#### Full Changelog
+
+https://github.com/jeffersongoncalves/filament-action-export/compare/v3.2.0...v3.3.0
+
 ## v3.2.0 - 2026-03-06
 
 ### What's Changed
