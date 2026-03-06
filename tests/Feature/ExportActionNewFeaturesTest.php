@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use JeffersonGoncalves\FilamentExportAction\Actions\ExportAction;
-use JeffersonGoncalves\FilamentExportAction\Enums\ExportFormat;
 
 it('supports direct download flag', function () {
     $action = ExportAction::make('export')
