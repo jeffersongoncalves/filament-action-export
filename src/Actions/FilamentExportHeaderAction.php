@@ -125,7 +125,7 @@ class FilamentExportHeaderAction extends Action
 
         $this->label(__('filament-action-export::filament-action-export.actions.export'))
             ->icon(config('filament-action-export.icons.action', 'heroicon-o-arrow-down-tray'))
-            ->form(fn () => $this->isDirectDownload() ? [] : $this->buildFormSchema())
+            ->schema(fn () => $this->isDirectDownload() ? [] : $this->buildFormSchema())
             ->action(function (array $data): StreamedResponse {
                 $format = $this->isDirectDownload()
                     ? $this->getDefaultFormat()
