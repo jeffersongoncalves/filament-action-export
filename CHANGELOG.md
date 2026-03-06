@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.3.0 - 2026-03-06
+
+### What's Changed
+
+- Add `getTableQuery()`, `getRecords()`, `modifyQueryUsing()` to `FilamentExportHeaderAction`
+- Add `withFilters()`, `withSearch()`, `withSort()` flags for table state filtering
+- Add tests for `modifyQueryUsing` (single, multiple, null callback)
+
+**Full Changelog**: https://github.com/jeffersongoncalves/filament-action-export/compare/v1.2.0...v1.3.0
+
 ## v1.2.0 - 2026-03-06
 
 ### What's Changed
