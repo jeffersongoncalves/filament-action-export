@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JeffersonGoncalves\FilamentExportAction\Actions;
 
 use Filament\Tables\Actions\Action;
+use Illuminate\Support\Collection;
 use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasAdditionalColumns;
 use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasCsvDelimiter;
 use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasDirectDownload;
@@ -65,12 +66,33 @@ class FilamentExportHeaderAction extends Action
         return $this;
     }
 
+    protected function resolveExportRecords(): Collection
+    {
+        $table = $this->getTable();
+
+        if (! $this->withFilters && ! $this->withSearch && ! $this->withSort) {
+            return $table->getQuery()->get();
+        }
+
+        $livewire = $this->getLivewire();
+
+        if ($this->withSort && method_exists($livewire, 'getFilteredSortedTableQuery')) {
+            return $livewire->getFilteredSortedTableQuery()->get();
+        }
+
+        if (method_exists($livewire, 'getFilteredTableQuery')) {
+            return $livewire->getFilteredTableQuery()->get();
+        }
+
+        return $table->getQuery()->get();
+    }
+
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->label(__('filament-action-export::filament-action-export.actions.export'))
-            ->icon('heroicon-o-arrow-down-tray')
+            ->icon(config('filament-action-export.icons.action', 'heroicon-o-arrow-down-tray'))
             ->form(fn () => $this->isDirectDownload() ? [] : $this->buildFormSchema())
             ->action(function (array $data): StreamedResponse {
                 $format = $this->isDirectDownload()
@@ -85,7 +107,7 @@ class FilamentExportHeaderAction extends Action
                 }
 
                 $allColumns = array_merge($columns, $this->getAdditionalColumnsAsArray());
-                $records = $this->getTable()->getRecords();
+                $records = $this->resolveExportRecords();
 
                 $userFileName = $data['file_name'] ?? null;
                 $pageOrientation = $data['page_orientation'] ?? null;

@@ -112,3 +112,105 @@ it('header action supports new features', function () {
     expect($action->getCsvDelimiter())->toBe(';');
     expect($action->getFormatStates())->toHaveCount(1);
 });
+
+it('supports disabling table columns on bulk action', function () {
+    $action = FilamentExportBulkAction::make('export')
+        ->disableTableColumns();
+
+    expect($action->isTableColumnsDisabled())->toBeTrue();
+});
+
+it('supports disabling table columns on header action', function () {
+    $action = FilamentExportHeaderAction::make('export')
+        ->disableTableColumns();
+
+    expect($action->isTableColumnsDisabled())->toBeTrue();
+});
+
+it('supports disabling file name prefix on bulk action', function () {
+    $action = FilamentExportBulkAction::make('export')
+        ->fileNamePrefix('prefix')
+        ->disableFileNamePrefix();
+
+    expect($action->isFileNamePrefixEnabled())->toBeFalse();
+
+    $resolved = $action->resolveFileName('report');
+
+    expect($resolved)->toStartWith('report-')
+        ->not->toStartWith('prefix-');
+});
+
+it('supports disabling file name prefix on header action', function () {
+    $action = FilamentExportHeaderAction::make('export')
+        ->fileNamePrefix('prefix')
+        ->disableFileNamePrefix();
+
+    expect($action->isFileNamePrefixEnabled())->toBeFalse();
+
+    $resolved = $action->resolveFileName('report');
+
+    expect($resolved)->toStartWith('report-')
+        ->not->toStartWith('prefix-');
+});
+
+it('supports with filters flag on header action', function () {
+    $action = FilamentExportHeaderAction::make('export')
+        ->withFilters();
+
+    expect($action)->toBeInstanceOf(FilamentExportHeaderAction::class);
+});
+
+it('supports with search flag on header action', function () {
+    $action = FilamentExportHeaderAction::make('export')
+        ->withSearch();
+
+    expect($action)->toBeInstanceOf(FilamentExportHeaderAction::class);
+});
+
+it('supports with sort flag on header action', function () {
+    $action = FilamentExportHeaderAction::make('export')
+        ->withSort();
+
+    expect($action)->toBeInstanceOf(FilamentExportHeaderAction::class);
+});
+
+it('supports chaining all table state flags on header action', function () {
+    $action = FilamentExportHeaderAction::make('export')
+        ->withFilters()
+        ->withSearch()
+        ->withSort();
+
+    expect($action)->toBeInstanceOf(FilamentExportHeaderAction::class);
+});
+
+it('reads action icon from config', function () {
+    config()->set('filament-action-export.icons.action', 'heroicon-o-document-arrow-down');
+
+    $icon = config('filament-action-export.icons.action');
+
+    expect($icon)->toBe('heroicon-o-document-arrow-down');
+});
+
+it('reads use_snappy from config', function () {
+    config()->set('filament-action-export.use_snappy', true);
+
+    $action = FilamentExportBulkAction::make('export');
+
+    expect($action->getPdfDriver())->toBe('snappy');
+});
+
+it('prefers explicit snappy over config', function () {
+    config()->set('filament-action-export.use_snappy', false);
+
+    $action = FilamentExportBulkAction::make('export')->snappy();
+
+    expect($action->getPdfDriver())->toBe('snappy');
+});
+
+it('prefers explicit pdfDriver over use_snappy config', function () {
+    config()->set('filament-action-export.use_snappy', true);
+
+    $action = FilamentExportBulkAction::make('export')->pdfDriver('dompdf');
+
+    expect($action->getPdfDriver())->toBe('dompdf');
+});

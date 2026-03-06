@@ -44,7 +44,7 @@ class FilamentExportBulkAction extends BulkAction
         parent::setUp();
 
         $this->label(__('filament-action-export::filament-action-export.actions.export'))
-            ->icon('heroicon-o-arrow-down-tray')
+            ->icon(config('filament-action-export.icons.action', 'heroicon-o-arrow-down-tray'))
             ->form(fn () => $this->isDirectDownload() ? [] : $this->buildFormSchema())
             ->action(function (array $data, Collection $records): StreamedResponse {
                 $format = $this->isDirectDownload()
