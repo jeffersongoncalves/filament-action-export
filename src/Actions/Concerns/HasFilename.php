@@ -16,6 +16,8 @@ trait HasFilename
 
     protected string $timeFormat = 'Y-m-d_H-i';
 
+    protected bool $fileNamePrefixEnabled = true;
+
     protected ?Closure $fileNameUsing = null;
 
     public function fileName(string $name): static
@@ -37,6 +39,18 @@ trait HasFilename
         $this->fileNameEnabled = ! $condition;
 
         return $this;
+    }
+
+    public function disableFileNamePrefix(bool $condition = true): static
+    {
+        $this->fileNamePrefixEnabled = ! $condition;
+
+        return $this;
+    }
+
+    public function isFileNamePrefixEnabled(): bool
+    {
+        return $this->fileNamePrefixEnabled;
     }
 
     public function timeFormat(string $format): static
@@ -71,7 +85,7 @@ trait HasFilename
 
         $parts = [];
 
-        if ($this->fileNamePrefix !== null) {
+        if ($this->fileNamePrefixEnabled && $this->fileNamePrefix !== null) {
             $parts[] = $this->fileNamePrefix;
         }
 

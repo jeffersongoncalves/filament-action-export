@@ -18,6 +18,8 @@ trait HasExportColumns
 
     protected bool $withHiddenColumns = false;
 
+    protected bool $disableTableColumns = false;
+
     /** @param array<string> $columns */
     public function columns(array $columns): static
     {
@@ -48,11 +50,27 @@ trait HasExportColumns
         return $this;
     }
 
+    public function disableTableColumns(bool $condition = true): static
+    {
+        $this->disableTableColumns = $condition;
+
+        return $this;
+    }
+
+    public function isTableColumnsDisabled(): bool
+    {
+        return $this->disableTableColumns;
+    }
+
     /**
      * @return array<string, string> key = field name, value = column label
      */
     public function resolveColumns(Table $table): array
     {
+        if ($this->disableTableColumns) {
+            return [];
+        }
+
         if ($this->exportColumns !== null) {
             $tableColumns = $table->getColumns();
             $columns = [];

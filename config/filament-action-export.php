@@ -12,4 +12,12 @@ return [
     ],
     'preview_enabled' => true,
     'print_enabled' => true,
+    'use_snappy' => false,
+    'icons' => [
+        'action' => 'heroicon-o-arrow-down-tray',
+        'preview' => 'heroicon-o-eye',
+        'export' => 'heroicon-o-arrow-down-tray',
+        'print' => 'heroicon-o-printer',
+        'cancel' => 'heroicon-o-x-circle',
+    ],
 ];

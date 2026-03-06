@@ -98,3 +98,85 @@ it('resolves filename with user input', function () {
 
     expect($resolved)->toStartWith('report-quarterly-');
 });
+
+it('supports disabling table columns', function () {
+    $action = ExportAction::make('export')
+        ->disableTableColumns();
+
+    expect($action->isTableColumnsDisabled())->toBeTrue();
+});
+
+it('supports disabling file name prefix', function () {
+    $action = ExportAction::make('export')
+        ->fileNamePrefix('prefix')
+        ->disableFileNamePrefix();
+
+    expect($action->isFileNamePrefixEnabled())->toBeFalse();
+
+    $resolved = $action->resolveFileName('report');
+
+    expect($resolved)->toStartWith('report-')
+        ->not->toStartWith('prefix-');
+});
+
+it('supports with filters flag', function () {
+    $action = ExportAction::make('export')
+        ->withFilters();
+
+    expect($action)->toBeInstanceOf(ExportAction::class);
+});
+
+it('supports with search flag', function () {
+    $action = ExportAction::make('export')
+        ->withSearch();
+
+    expect($action)->toBeInstanceOf(ExportAction::class);
+});
+
+it('supports with sort flag', function () {
+    $action = ExportAction::make('export')
+        ->withSort();
+
+    expect($action)->toBeInstanceOf(ExportAction::class);
+});
+
+it('supports chaining all table state flags', function () {
+    $action = ExportAction::make('export')
+        ->withFilters()
+        ->withSearch()
+        ->withSort();
+
+    expect($action)->toBeInstanceOf(ExportAction::class);
+});
+
+it('reads action icon from config', function () {
+    config()->set('filament-action-export.icons.action', 'heroicon-o-document-arrow-down');
+
+    $icon = config('filament-action-export.icons.action');
+
+    expect($icon)->toBe('heroicon-o-document-arrow-down');
+});
+
+it('reads use_snappy from config', function () {
+    config()->set('filament-action-export.use_snappy', true);
+
+    $action = ExportAction::make('export');
+
+    expect($action->getPdfDriver())->toBe('snappy');
+});
+
+it('prefers explicit snappy over config', function () {
+    config()->set('filament-action-export.use_snappy', false);
+
+    $action = ExportAction::make('export')->snappy();
+
+    expect($action->getPdfDriver())->toBe('snappy');
+});
+
+it('prefers explicit pdfDriver over use_snappy config', function () {
+    config()->set('filament-action-export.use_snappy', true);
+
+    $action = ExportAction::make('export')->pdfDriver('dompdf');
+
+    expect($action->getPdfDriver())->toBe('dompdf');
+});
