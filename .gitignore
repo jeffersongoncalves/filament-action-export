@@ -10,3 +10,4 @@ composer.lock
 *.swo
 .DS_Store
 Thumbs.db
+pnpm-lock.yaml

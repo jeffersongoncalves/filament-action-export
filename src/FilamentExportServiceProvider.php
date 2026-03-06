@@ -4,34 +4,32 @@ declare(strict_types=1);
 
 namespace JeffersonGoncalves\FilamentExportAction;
 
-use Illuminate\Support\ServiceProvider;
+use Filament\Support\Assets\Css;
+use Filament\Support\Facades\FilamentAsset;
 use JeffersonGoncalves\FilamentExportAction\Livewire\ExportPreview;
 use Livewire\Livewire;
+use Spatie\LaravelPackageTools\Package;
+use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-class FilamentExportServiceProvider extends ServiceProvider
+class FilamentExportServiceProvider extends PackageServiceProvider
 {
-    public function register(): void
+    public static string $name = 'filament-action-export';
+
+    public function configurePackage(Package $package): void
     {
-        $this->mergeConfigFrom(__DIR__ . '/../config/filament-action-export.php', 'filament-action-export');
+        $package
+            ->name(static::$name)
+            ->hasConfigFile()
+            ->hasViews()
+            ->hasTranslations();
     }
 
-    public function boot(): void
+    public function packageBooted(): void
     {
-        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'filament-action-export');
-        $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'filament-action-export');
+        FilamentAsset::register([
+            Css::make(static::$name, __DIR__ . '/../resources/dist/filament-action-export.css'),
+        ], 'jeffersongoncalves/filament-action-export');
 
         Livewire::component('filament-action-export.export-preview', ExportPreview::class);
-
-        $this->publishes([
-            __DIR__ . '/../config/filament-action-export.php' => config_path('filament-action-export.php'),
-        ], 'filament-action-export-config');
-
-        $this->publishes([
-            __DIR__ . '/../resources/views' => resource_path('views/vendor/filament-action-export'),
-        ], 'filament-action-export-views');
-
-        $this->publishes([
-            __DIR__ . '/../resources/lang' => lang_path('vendor/filament-action-export'),
-        ], 'filament-action-export-lang');
     }
 }
