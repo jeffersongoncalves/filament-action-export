@@ -6,28 +6,28 @@
 
 # Filament Action Export
 
-[![Tests](https://github.com/jeffersongoncalves/filament-action-export/actions/workflows/tests.yml/badge.svg?branch=2.x)](https://github.com/jeffersongoncalves/filament-action-export/actions/workflows/tests.yml)
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/jeffersongoncalves/filament-action-export.svg?style=flat-square)](https://packagist.org/packages/jeffersongoncalves/filament-action-export)
+[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/jeffersongoncalves/filament-action-export/pint.yml?branch=2.x&label=code%20style&style=flat-square)](https://github.com/jeffersongoncalves/filament-action-export/actions?query=workflow%3A"Fix+PHP+code+styling"+branch%3A2.x)
 [![Total Downloads](https://img.shields.io/packagist/dt/jeffersongoncalves/filament-action-export.svg?style=flat-square)](https://packagist.org/packages/jeffersongoncalves/filament-action-export)
 [![License](https://img.shields.io/packagist/l/jeffersongoncalves/filament-action-export.svg?style=flat-square)](LICENSE.md)
 
 Export Filament tables to **CSV**, **XLSX** and **PDF** with preview and print support.
 
-## Version Compatibility
+## Compatibility
 
-| Package | Filament | PHP    | Laravel          | Livewire |
-|---------|----------|--------|------------------|----------|
-| ^1.0    | ^3.0     | ^8.1   | ^10.0 \| ^11.0   | ^3.0     |
-| ^2.0    | ^4.0     | ^8.2   | ^11.0            | ^3.0     |
-| ^3.0    | ^5.0     | ^8.2   | ^11.28           | ^4.0     |
-
-> This is the **`2.x`** branch, compatible with **Filament v4**.
+| Package Version                                                                 | Filament Version |
+|---------------------------------------------------------------------------------|------------------|
+| [1.x](https://github.com/jeffersongoncalves/filament-action-export/tree/1.x)   | 3.x              |
+| [2.x](https://github.com/jeffersongoncalves/filament-action-export/tree/2.x)   | 4.x              |
+| [3.x](https://github.com/jeffersongoncalves/filament-action-export/tree/3.x)   | 5.x              |
 
 ## Upgrading from v1.x
 
 The `2.x` branch introduces a unified `ExportAction` replacing the separate `FilamentExportBulkAction` and `FilamentExportHeaderAction`. See the [migration section](#migrating-from-1x) below.
 
 ## Installation
+
+You can install the package via composer:
 
 ```bash
 composer require jeffersongoncalves/filament-action-export "^2.0"
@@ -339,13 +339,17 @@ $table->headerActions([
 composer test
 ```
 
+## Changelog
+
+Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
+
 ## Contributing
 
 Please see [CONTRIBUTING](.github/CONTRIBUTING.md) for details.
 
-## Security
+## Security Vulnerabilities
 
-If you discover any security-related issues, please email security@jeffersongoncalves.com instead of using the issue tracker.
+Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
 
 ## Credits
 
