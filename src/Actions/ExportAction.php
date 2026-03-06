@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace JeffersonGoncalves\FilamentExportAction\Actions;
 
-use Filament\Tables\Actions\Action;
+use Filament\Actions\Action;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Collection;
 use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasAdditionalColumns;
 use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasExportColumns;
 use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasExportFormats;
@@ -14,7 +16,7 @@ use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasTableDataExport;
 use JeffersonGoncalves\FilamentExportAction\Enums\ExportFormat;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-class FilamentExportHeaderAction extends Action
+class ExportAction extends Action
 {
     use HasAdditionalColumns;
     use HasExportColumns;
@@ -62,7 +64,7 @@ class FilamentExportHeaderAction extends Action
         $this->label(__('filament-action-export::filament-action-export.actions.export'))
             ->icon('heroicon-o-arrow-down-tray')
             ->form(fn () => $this->buildFormSchema())
-            ->action(function (array $data): StreamedResponse {
+            ->action(function (array $data, ?Collection $records = null): StreamedResponse {
                 $format = ExportFormat::from($data['format']);
 
                 if ($this->canSelectColumns && isset($data['columns'])) {
@@ -73,7 +75,10 @@ class FilamentExportHeaderAction extends Action
                 }
 
                 $allColumns = array_merge($columns, $this->getAdditionalColumnsAsArray());
-                $records = $this->getTable()->getRecords();
+
+                if ($records === null || $records->isEmpty()) {
+                    $records = $this->getTable()->getRecords();
+                }
 
                 return $this->performExport($records, $allColumns, $format);
             });

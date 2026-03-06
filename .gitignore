@@ -1,6 +1,7 @@
 /vendor/
 /node_modules/
 composer.lock
+pnpm-lock.yaml
 .phpunit.result.cache
 .phpunit.cache/
 .idea/

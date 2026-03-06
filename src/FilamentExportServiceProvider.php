@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace JeffersonGoncalves\FilamentExportAction;
 
+use Filament\Support\Assets\Css;
+use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Support\ServiceProvider;
 use JeffersonGoncalves\FilamentExportAction\Livewire\ExportPreview;
 use Livewire\Livewire;
@@ -19,6 +21,10 @@ class FilamentExportServiceProvider extends ServiceProvider
     {
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'filament-action-export');
         $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'filament-action-export');
+
+        FilamentAsset::register([
+            Css::make('filament-action-export', __DIR__ . '/../resources/dist/filament-action-export.css'),
+        ], 'jeffersongoncalves/filament-action-export');
 
         Livewire::component('filament-action-export.export-preview', ExportPreview::class);
 

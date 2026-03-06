@@ -1,0 +1,79 @@
+/* Filament Action Export - Custom Styles */
+
+.fi-export-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+}
+
+.fi-export-print-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    border-radius: var(--radius-lg, 0.5rem);
+    background-color: var(--gray-100, #f3f4f6);
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--gray-700, #374151);
+    cursor: pointer;
+    border: none;
+}
+
+.fi-export-print-btn:hover {
+    background-color: var(--gray-200, #e5e7eb);
+}
+
+.fi-export-print-btn svg {
+    width: 1rem;
+    height: 1rem;
+}
+
+.fi-export-table-wrapper {
+    overflow-x: auto;
+    border-radius: var(--radius-lg, 0.5rem);
+    border: 1px solid var(--gray-200, #e5e7eb);
+}
+
+.fi-export-table {
+    min-width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    font-size: 0.875rem;
+}
+
+.fi-export-table thead {
+    background-color: var(--gray-50, #f9fafb);
+}
+
+.fi-export-table th {
+    white-space: nowrap;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--gray-600, #4b5563);
+    border-bottom: 1px solid var(--gray-200, #e5e7eb);
+}
+
+.fi-export-table tbody tr {
+    border-bottom: 1px solid var(--gray-200, #e5e7eb);
+}
+
+.fi-export-table tbody tr:hover {
+    background-color: var(--gray-50, #f9fafb);
+}
+
+.fi-export-table td {
+    white-space: nowrap;
+    padding: 0.75rem 1rem;
+    color: var(--gray-700, #374151);
+}
+
+.fi-export-table-empty {
+    padding: 2rem 1rem;
+    text-align: center;
+    color: var(--gray-500, #6b7280);
+}
