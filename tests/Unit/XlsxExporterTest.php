@@ -11,7 +11,7 @@ it('exports records to xlsx with correct mime type', function () {
         ['name' => 'Bob', 'email' => 'bob@example.com'],
     ]);
     $columns = ['name' => 'Nome', 'email' => 'E-mail'];
-    $exporter = new XlsxExporter();
+    $exporter = new XlsxExporter;
     $response = $exporter->export($records, $columns, 'test');
 
     expect($response)->toBeInstanceOf(StreamedResponse::class);
@@ -21,7 +21,7 @@ it('exports records to xlsx with correct mime type', function () {
 it('handles empty collection gracefully', function () {
     $records = collect([]);
     $columns = ['name' => 'Nome'];
-    $exporter = new XlsxExporter();
+    $exporter = new XlsxExporter;
     $response = $exporter->export($records, $columns, 'test');
 
     expect($response)->toBeInstanceOf(StreamedResponse::class);

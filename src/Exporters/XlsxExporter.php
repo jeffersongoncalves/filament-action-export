@@ -17,7 +17,7 @@ class XlsxExporter implements Exporter
         $columnKeys = array_keys($columns);
         $columnLabels = array_values($columns);
 
-        $tempFile = tempnam(sys_get_temp_dir(), 'export') . '.xlsx';
+        $tempFile = tempnam(sys_get_temp_dir(), 'export').'.xlsx';
 
         $writer = SimpleExcelWriter::create($tempFile);
         $writer->noHeaderRow();

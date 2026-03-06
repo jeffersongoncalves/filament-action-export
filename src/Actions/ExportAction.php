@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace JeffersonGoncalves\FilamentExportAction\Actions;
 
 use Filament\Actions\Action;
-use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
 use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasAdditionalColumns;
 use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasExportColumns;

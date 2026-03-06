@@ -50,7 +50,7 @@ trait HasExportColumns
 
             foreach ($this->exportColumns as $columnName) {
                 if (isset($tableColumns[$columnName])) {
-                    $columns[$columnName] = $tableColumns[$columnName]->getLabel() ?? $columnName;
+                    $columns[$columnName] = $tableColumns[$columnName]->getLabel() ?: $columnName;
                 } else {
                     $columns[$columnName] = $columnName;
                 }
@@ -59,7 +59,7 @@ trait HasExportColumns
             $columns = [];
             foreach ($table->getColumns() as $column) {
                 $name = $column->getName();
-                $columns[$name] = $column->getLabel() ?? $name;
+                $columns[$name] = $column->getLabel() ?: $name;
             }
         }
 
