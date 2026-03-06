@@ -20,9 +20,9 @@ trait HasTableDataExport
     public function getExporter(ExportFormat $format): Exporter
     {
         return match ($format) {
-            ExportFormat::Csv => new CsvExporter(),
-            ExportFormat::Xlsx => new XlsxExporter(),
-            ExportFormat::Pdf => (new PdfExporter())
+            ExportFormat::Csv => new CsvExporter,
+            ExportFormat::Xlsx => new XlsxExporter,
+            ExportFormat::Pdf => (new PdfExporter)
                 ->driver($this->getPdfDriver())
                 ->pdfOptions($this->getPdfOptions())
                 ->extraViewData($this->resolveExtraViewData()),
@@ -31,7 +31,7 @@ trait HasTableDataExport
 
     public function buildFilename(ExportFormat $format): string
     {
-        return 'export-' . now()->format('Y-m-d');
+        return 'export-'.now()->format('Y-m-d');
     }
 
     public function performExport(Collection $records, array $columns, ExportFormat $format): StreamedResponse

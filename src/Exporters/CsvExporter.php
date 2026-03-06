@@ -17,7 +17,7 @@ class CsvExporter implements Exporter
         $columnKeys = array_keys($columns);
         $columnLabels = array_values($columns);
 
-        $tempFile = tempnam(sys_get_temp_dir(), 'export') . '.csv';
+        $tempFile = tempnam(sys_get_temp_dir(), 'export').'.csv';
 
         $writer = SimpleExcelWriter::create($tempFile);
         $writer->noHeaderRow();
