@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## v3.4.0 - 2026-03-06
+
+### What's Changed
+
+- Remove `ExportAction` class (use `FilamentExportHeaderAction` or `FilamentExportBulkAction` instead)
+- Replace deprecated `form()` with `schema()` for Filament v5 compatibility
+- Update all tests to use `FilamentExportBulkAction`/`FilamentExportHeaderAction`
+
+**Full Changelog**: https://github.com/jeffersongoncalves/filament-action-export/compare/v3.3.0...v3.4.0
+
 ## v3.3.0 - 2026-03-06
 
 ### What's Changed
