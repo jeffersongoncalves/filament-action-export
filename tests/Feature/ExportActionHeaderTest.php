@@ -81,3 +81,25 @@ it('chains all configuration methods fluently', function () {
     expect($action->getPdfDriver())->toBe('snappy');
     expect($action->resolveExtraViewData())->toBe(['company' => 'Test']);
 });
+
+it('supports modifyQueryUsing callback', function () {
+    $action = ExportAction::make('export')
+        ->modifyQueryUsing(fn ($query) => $query->where('active', true));
+
+    expect($action)->toBeInstanceOf(ExportAction::class);
+});
+
+it('supports multiple modifyQueryUsing callbacks', function () {
+    $action = ExportAction::make('export')
+        ->modifyQueryUsing(fn ($query) => $query->where('active', true))
+        ->modifyQueryUsing(fn ($query) => $query->where('role', 'admin'));
+
+    expect($action)->toBeInstanceOf(ExportAction::class);
+});
+
+it('supports modifyQueryUsing with null callback', function () {
+    $action = ExportAction::make('export')
+        ->modifyQueryUsing(null);
+
+    expect($action)->toBeInstanceOf(ExportAction::class);
+});

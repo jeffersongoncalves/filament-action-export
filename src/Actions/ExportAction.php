@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace JeffersonGoncalves\FilamentExportAction\Actions;
 
+use Closure;
 use Filament\Actions\Action;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasAdditionalColumns;
 use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasCsvDelimiter;
@@ -40,6 +42,9 @@ class ExportAction extends Action
 
     protected bool $withSort = false;
 
+    /** @var array<int, Closure> */
+    protected array $modifyQueryCallbacks = [];
+
     public static function getDefaultName(): ?string
     {
         return 'export';
@@ -66,25 +71,52 @@ class ExportAction extends Action
         return $this;
     }
 
-    protected function resolveExportRecords(): Collection
+    public function modifyQueryUsing(?Closure $callback): static
     {
+        if ($callback) {
+            $this->modifyQueryCallbacks[] = $callback;
+        }
+
+        return $this;
+    }
+
+    public function getTableQuery(): Builder
+    {
+        $livewire = $this->getLivewire();
         $table = $this->getTable();
+        $query = $table->getQuery();
 
         if (! $this->withFilters && ! $this->withSearch && ! $this->withSort) {
-            return $table->getQuery()->get();
+            return $this->applyModifyQueryCallbacks($query);
         }
-
-        $livewire = $this->getLivewire();
 
         if ($this->withSort && method_exists($livewire, 'getFilteredSortedTableQuery')) {
-            return $livewire->getFilteredSortedTableQuery()->get();
+            return $this->applyModifyQueryCallbacks($livewire->getFilteredSortedTableQuery());
         }
 
-        if (method_exists($livewire, 'getFilteredTableQuery')) {
-            return $livewire->getFilteredTableQuery()->get();
+        if (($this->withFilters || $this->withSearch) && method_exists($livewire, 'getFilteredTableQuery')) {
+            return $this->applyModifyQueryCallbacks($livewire->getFilteredTableQuery());
         }
 
-        return $table->getQuery()->get();
+        return $this->applyModifyQueryCallbacks($query);
+    }
+
+    public function getRecords(): Collection
+    {
+        return $this->getTableQuery()->get();
+    }
+
+    protected function applyModifyQueryCallbacks(Builder $query): Builder
+    {
+        foreach ($this->modifyQueryCallbacks as $callback) {
+            $result = $callback($query);
+
+            if ($result instanceof Builder) {
+                $query = $result;
+            }
+        }
+
+        return $query;
     }
 
     protected function setUp(): void
@@ -109,7 +141,7 @@ class ExportAction extends Action
                 $allColumns = array_merge($columns, $this->getAdditionalColumnsAsArray());
 
                 if ($records === null || $records->isEmpty()) {
-                    $records = $this->resolveExportRecords();
+                    $records = $this->getRecords();
                 }
 
                 $userFileName = $data['file_name'] ?? null;
