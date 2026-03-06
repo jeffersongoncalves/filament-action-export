@@ -1,3 +1,9 @@
+<div class="filament-hidden">
+
+![Filament Action Export](https://raw.githubusercontent.com/jeffersongoncalves/filament-action-export/2.x/art/jeffersongoncalves-filament-action-export.png)
+
+</div>
+
 # Filament Action Export
 
 [![Tests](https://github.com/jeffersongoncalves/filament-action-export/actions/workflows/tests.yml/badge.svg?branch=2.x)](https://github.com/jeffersongoncalves/filament-action-export/actions/workflows/tests.yml)
