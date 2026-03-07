@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.4.0 - 2026-03-07
+
+### Fixed
+
+- Fix tests: replace removed `userCanSelectColumns()` with `disableFilterColumns()`
+- Fix filename resolution assertions for new `resolveFileName()` behavior
+- Fix disabled prefix assertions to match exact resolved filename
+
+### Added
+
+- Comprehensive `NewTraitFeaturesTest` covering HasPreview, HasPageOrientation, HasAdditionalColumns, HasExportColumns, HasExportFormats, HasFilename, HasTableDataExport (fillDefaultData), config-driven defaults, withColumns, modifyQueryUsing
+
+**Full Changelog**: https://github.com/jeffersongoncalves/filament-action-export/compare/v1.3.0...v1.4.0
+
 ## v1.3.0 - 2026-03-06
 
 ### What's Changed
