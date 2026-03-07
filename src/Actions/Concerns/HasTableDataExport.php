@@ -142,7 +142,7 @@ trait HasTableDataExport
         return $exporter->export($formattedRecords, $columns, $filename);
     }
 
-    /** @return array<\Filament\Forms\Components\Component> */
+    /** @return array<\Filament\Schemas\Components\Component> */
     public function buildFormSchema(?Collection $previewRecords = null): array
     {
         // Auto-set file name prefix from table heading
