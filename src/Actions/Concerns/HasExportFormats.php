@@ -13,6 +13,8 @@ trait HasExportFormats
 
     protected ?ExportFormat $defaultFormat = null;
 
+    protected bool $formatsDisabled = false;
+
     /** @param array<ExportFormat> $formats */
     public function formats(array $formats): static
     {
@@ -26,6 +28,18 @@ trait HasExportFormats
         $this->defaultFormat = $format;
 
         return $this;
+    }
+
+    public function disableFormats(bool $condition = true): static
+    {
+        $this->formatsDisabled = $condition;
+
+        return $this;
+    }
+
+    public function isFormatsDisabled(): bool
+    {
+        return $this->formatsDisabled;
     }
 
     /** @return array<ExportFormat> */
