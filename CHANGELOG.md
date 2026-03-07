@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## v2.5.1 - 2026-03-07
+
+### Bug Fix
+
+- Fix: correct `Filament\Forms\Components\Component` docblock namespace to `Filament\Schemas\Components\Component` (Filament v4 compatible)
+
 ## v2.5.0 - 2026-03-07
 
 ### What's Changed
