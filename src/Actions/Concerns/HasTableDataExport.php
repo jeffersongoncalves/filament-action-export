@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace JeffersonGoncalves\FilamentExportAction\Actions\Concerns;
 
+use Filament\Actions\Action;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\ViewField;
 use Filament\Schemas\Components\Utilities\Get;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use JeffersonGoncalves\FilamentExportAction\Actions\FilamentExportBulkAction;
+use JeffersonGoncalves\FilamentExportAction\Components\TableView;
 use JeffersonGoncalves\FilamentExportAction\Enums\ExportFormat;
 use JeffersonGoncalves\FilamentExportAction\Exporters\Contracts\Exporter;
 use JeffersonGoncalves\FilamentExportAction\Exporters\CsvExporter;
@@ -177,7 +180,7 @@ trait HasTableDataExport
     }
 
     /** @return array<\Filament\Schemas\Components\Component> */
-    public function buildFormSchema(?Collection $previewRecords = null): array
+    public function buildFormSchema(?LengthAwarePaginator $paginator = null): array
     {
         // Auto-set file name prefix from table heading
         if ($this->isFileNamePrefixEnabled() && ! $this->hasCustomFileNamePrefix()) {
@@ -253,28 +256,174 @@ trait HasTableDataExport
                 ->addActionLabel(__('filament-action-export::filament-action-export.fields.additional_column_add'));
         }
 
-        // Preview section
-        if ($this->isPreviewEnabled() && $previewRecords !== null && $previewRecords->isNotEmpty()) {
-            $previewRows = $this->getFormattedRows($previewRecords->take(10));
-            $previewColumns = $this->resolveColumns($this->getTable());
+        // TableView component with reactive preview modal
+        if ($this->isPreviewEnabled() && $paginator !== null) {
+            $action = $this;
 
-            foreach ($this->getAdditionalColumns() as $column) {
-                $previewColumns[$column->getName()] = $column->getLabel();
+            $updateTableView = function ($component, $livewire) use ($action) {
+                $data = $action instanceof FilamentExportBulkAction
+                    ? $livewire->getMountedTableBulkActionForm()->getState()
+                    : $livewire->getMountedTableActionForm()->getState();
+
+                // Resolve columns based on filter_columns state
+                $allColumns = $action->resolveColumns($action->getTable());
+                $filteredColumnNames = $data['filter_columns'] ?? [];
+
+                if (! empty($filteredColumnNames) && ! $action->isFilterColumnsDisabled()) {
+                    $columns = array_intersect_key($allColumns, array_flip($filteredColumnNames));
+                } else {
+                    $columns = $allColumns;
+                }
+
+                // Add additional columns
+                foreach ($action->getAdditionalColumns() as $col) {
+                    $columns[$col->getName()] = $col->getLabel();
+                }
+
+                // Check if this is a print request
+                $printHTML = '';
+                $tableViewValue = $data['table_view'] ?? '';
+                if ($tableViewValue === 'print-'.$action->getUniqueActionId()) {
+                    $records = $action->getRecords();
+                    $printHTML = $action->renderPrintHtml($records, $data);
+                }
+
+                // Get paginated rows for preview
+                $currentPaginator = $action->getPaginator();
+                $rows = [];
+                if ($currentPaginator !== null) {
+                    $rows = $action->getFormattedRows(
+                        $currentPaginator->getCollection(),
+                        array_keys($columns)
+                    );
+                }
+
+                // Reset pagination on filter change
+                $livewire->resetPage('exportPage');
+
+                $component
+                    ->exportColumns($columns)
+                    ->rows($rows)
+                    ->paginator($currentPaginator)
+                    ->refresh($action->shouldRefreshTableView())
+                    ->printHTML($printHTML);
+            };
+
+            // Build initial preview data
+            $initialColumns = $this->resolveColumns($this->getTable());
+            foreach ($this->getAdditionalColumns() as $col) {
+                $initialColumns[$col->getName()] = $col->getLabel();
             }
+            $initialRows = $this->getFormattedRows(
+                $paginator->getCollection(),
+                array_keys($initialColumns)
+            );
 
-            /** @var view-string $previewView */
-            $previewView = 'filament-action-export::components.preview-section';
-
-            $schema[] = ViewField::make('preview')
-                ->label(__('filament-action-export::filament-action-export.actions.preview'))
-                ->view($previewView)
-                ->viewData([
-                    'rows' => $previewRows,
-                    'columns' => $previewColumns,
-                ])
-                ->dehydrated(false);
+            $schema[] = TableView::make('table_view')
+                ->exportColumns($initialColumns)
+                ->rows($initialRows)
+                ->paginator($paginator)
+                ->uniqueActionId($this->getUniqueActionId())
+                ->afterStateUpdated($updateTableView)
+                ->reactive();
         }
 
         return $schema;
+    }
+
+    /**
+     * Get the modal footer actions for the export modal.
+     *
+     * @return array<Action>
+     */
+    public function getExportModalActions(): array
+    {
+        $uniqueActionId = $this->getUniqueActionId();
+
+        $actions = [];
+
+        // Preview button (opens preview modal)
+        if ($this->isPreviewEnabled()) {
+            $actions[] = Action::make('preview')
+                ->button()
+                ->label(__('filament-action-export::filament-action-export.actions.preview'))
+                ->color('success')
+                ->icon(config('filament-action-export.icons.preview', 'heroicon-o-eye'))
+                ->action("\$dispatch('open-preview-modal-{$uniqueActionId}')");
+        }
+
+        // Export button (submits form)
+        $actions[] = Action::make('submit')
+            ->button()
+            ->label(__('filament-action-export::filament-action-export.modal.submit'))
+            ->submit('mountedTableAction')
+            ->icon(config('filament-action-export.icons.export', 'heroicon-o-arrow-down-tray'));
+
+        // Print button (triggers print via hidden field mechanism)
+        if ($this->isPrintEnabled()) {
+            $actions[] = Action::make('print')
+                ->button()
+                ->label(__('filament-action-export::filament-action-export.actions.print'))
+                ->color('gray')
+                ->icon(config('filament-action-export.icons.print', 'heroicon-o-printer'))
+                ->action("\$dispatch('print-table-{$uniqueActionId}')");
+        }
+
+        // Cancel button
+        $actions[] = Action::make('cancel')
+            ->button()
+            ->label(__('filament-action-export::filament-action-export.actions.close'))
+            ->close()
+            ->color('gray');
+
+        return $actions;
+    }
+
+    /**
+     * Get the modal footer actions for the bulk export modal.
+     *
+     * @return array<Action>
+     */
+    public function getBulkExportModalActions(): array
+    {
+        $uniqueActionId = $this->getUniqueActionId();
+
+        $actions = [];
+
+        // Preview button (opens preview modal)
+        if ($this->isPreviewEnabled()) {
+            $actions[] = Action::make('preview')
+                ->button()
+                ->label(__('filament-action-export::filament-action-export.actions.preview'))
+                ->color('success')
+                ->icon(config('filament-action-export.icons.preview', 'heroicon-o-eye'))
+                ->action("\$dispatch('open-preview-modal-{$uniqueActionId}')");
+        }
+
+        // Export button (submits form)
+        $actions[] = Action::make('submit')
+            ->button()
+            ->label(__('filament-action-export::filament-action-export.modal.submit'))
+            ->submit('mountedTableBulkAction')
+            ->icon(config('filament-action-export.icons.export', 'heroicon-o-arrow-down-tray'));
+
+        // Print button (triggers print via hidden field mechanism)
+        if ($this->isPrintEnabled()) {
+            $actions[] = Action::make('print')
+                ->button()
+                ->label(__('filament-action-export::filament-action-export.actions.print'))
+                ->color('gray')
+                ->icon(config('filament-action-export.icons.print', 'heroicon-o-printer'))
+                ->action("\$dispatch('print-table-{$uniqueActionId}')");
+        }
+
+        // Cancel button
+        $actions[] = Action::make('cancel')
+            ->button()
+            ->label(__('filament-action-export::filament-action-export.actions.close'))
+            ->close()
+            ->color('gray');
+
+        return $actions;
     }
 }
