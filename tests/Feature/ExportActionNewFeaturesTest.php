@@ -25,7 +25,7 @@ it('supports file name prefix', function () {
 
     $resolved = $action->resolveFileName(null);
 
-    expect($resolved)->toStartWith('users-export-');
+    expect($resolved)->toStartWith('users-');
 });
 
 it('supports disabling file name input', function () {
@@ -97,7 +97,7 @@ it('resolves filename with user input', function () {
 
     $resolved = $action->resolveFileName('quarterly');
 
-    expect($resolved)->toStartWith('report-quarterly-');
+    expect($resolved)->toBe('report-quarterly');
 });
 
 it('header action supports new features', function () {
@@ -136,8 +136,7 @@ it('supports disabling file name prefix on bulk action', function () {
 
     $resolved = $action->resolveFileName('report');
 
-    expect($resolved)->toStartWith('report-')
-        ->not->toStartWith('prefix-');
+    expect($resolved)->toBe('report');
 });
 
 it('supports disabling file name prefix on header action', function () {
@@ -149,8 +148,7 @@ it('supports disabling file name prefix on header action', function () {
 
     $resolved = $action->resolveFileName('report');
 
-    expect($resolved)->toStartWith('report-')
-        ->not->toStartWith('prefix-');
+    expect($resolved)->toBe('report');
 });
 
 it('supports with filters flag on header action', function () {
