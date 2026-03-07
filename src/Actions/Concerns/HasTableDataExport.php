@@ -9,7 +9,7 @@ use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ViewField;
-use Filament\Forms\Get;
+use Filament\Schemas\Components\Utilities\Get;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use JeffersonGoncalves\FilamentExportAction\Enums\ExportFormat;
@@ -142,7 +142,7 @@ trait HasTableDataExport
         return $exporter->export($formattedRecords, $columns, $filename);
     }
 
-    /** @return array<\Filament\Forms\Components\Component> */
+    /** @return array<\Filament\Schemas\Components\Component> */
     public function buildFormSchema(?Collection $previewRecords = null): array
     {
         // Auto-set file name prefix from table heading
