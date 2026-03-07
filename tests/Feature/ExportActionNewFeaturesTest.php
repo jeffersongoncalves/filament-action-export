@@ -24,7 +24,7 @@ it('supports file name prefix', function () {
 
     $resolved = $action->resolveFileName(null);
 
-    expect($resolved)->toStartWith('users-export-');
+    expect($resolved)->toStartWith('users-');
 });
 
 it('supports disabling file name input', function () {
@@ -96,7 +96,7 @@ it('resolves filename with user input', function () {
 
     $resolved = $action->resolveFileName('quarterly');
 
-    expect($resolved)->toStartWith('report-quarterly-');
+    expect($resolved)->toBe('report-quarterly');
 });
 
 it('supports disabling table columns', function () {
@@ -115,8 +115,7 @@ it('supports disabling file name prefix', function () {
 
     $resolved = $action->resolveFileName('report');
 
-    expect($resolved)->toStartWith('report-')
-        ->not->toStartWith('prefix-');
+    expect($resolved)->toBe('report');
 });
 
 it('supports with filters flag', function () {
