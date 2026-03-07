@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## v3.6.1 - 2026-03-07
+
+### Bug Fix
+
+- Fix: wrap print JS in IIFE to fix `Uncaught SyntaxError: Unexpected token 'var'` caused by Livewire's `js()` evaluating via Alpine.js `new Function()`
+
 ## v3.6.0 - 2026-03-07
 
 ### New Feature
