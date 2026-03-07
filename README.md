@@ -12,19 +12,17 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/jeffersongoncalves/filament-action-export.svg?style=flat-square)](https://packagist.org/packages/jeffersongoncalves/filament-action-export)
 [![License](https://img.shields.io/packagist/l/jeffersongoncalves/filament-action-export.svg?style=flat-square)](LICENSE.md)
 
-Export Filament tables to **CSV**, **XLSX** and **PDF** with preview and print support.
+Export Filament tables to **CSV**, **XLSX** and **PDF** with preview, print support, and full customization.
 
 ## Compatibility
 
-| Package Version                                                                 | Filament Version |
-|---------------------------------------------------------------------------------|------------------|
-| [1.x](https://github.com/jeffersongoncalves/filament-action-export/tree/1.x)   | 3.x              |
-| [2.x](https://github.com/jeffersongoncalves/filament-action-export/tree/2.x)   | 4.x              |
-| [3.x](https://github.com/jeffersongoncalves/filament-action-export/tree/3.x)   | 5.x              |
+| Package Version                                                                 | Filament Version | PHP     |
+|---------------------------------------------------------------------------------|------------------|---------|
+| [1.x](https://github.com/jeffersongoncalves/filament-action-export/tree/1.x)   | 3.x              | ^8.1    |
+| [2.x](https://github.com/jeffersongoncalves/filament-action-export/tree/2.x)   | 4.x              | ^8.2    |
+| [3.x](https://github.com/jeffersongoncalves/filament-action-export/tree/3.x)   | 5.x              | ^8.2    |
 
 ## Installation
-
-You can install the package via composer:
 
 ```bash
 composer require jeffersongoncalves/filament-action-export "^1.0"
@@ -70,7 +68,6 @@ public function table(Table $table): Table
             FilamentExportBulkAction::make('export')
                 ->formats([ExportFormat::Csv, ExportFormat::Xlsx, ExportFormat::Pdf])
                 ->defaultFormat(ExportFormat::Xlsx)
-                ->userCanSelectColumns()
                 ->excludeColumns(['password', 'remember_token'])
                 ->additionalColumns([
                     AdditionalColumn::make('exported_at')
@@ -83,7 +80,7 @@ public function table(Table $table): Table
 
 ### Header Action
 
-Add the export action to your table's header actions to export all records (respecting active filters):
+Add the export action to your table's header actions to export all records (respecting active filters, search, and sort):
 
 ```php
 use JeffersonGoncalves\FilamentExportAction\Actions\FilamentExportHeaderAction;
@@ -127,6 +124,9 @@ public function table(Table $table): Table
 // File name prefix (prepended to the name)
 ->fileNamePrefix('users')
 
+// Disable prefix
+->disableFileNamePrefix()
+
 // Custom time format for the filename suffix
 ->timeFormat('d_m_Y-H_i')
 
@@ -154,14 +154,24 @@ Skip the modal form and download immediately with default settings:
 // Exclude columns
 ->excludeColumns(['password', 'remember_token'])
 
-// Let users choose columns in the modal
-->userCanSelectColumns()
+// Add extra Filament Column objects
+->withColumns([
+    TextColumn::make('full_address'),
+])
+
+// Disable the column filter checkboxes in the modal
+->disableFilterColumns()
 
 // Include hidden (toggled) columns in the export
 ->withHiddenColumns()
+
+// Disable table columns entirely (use only additional columns)
+->disableTableColumns()
 ```
 
 ### Additional Columns
+
+Add extra columns with user-fillable inputs in the export modal:
 
 ```php
 ->additionalColumns([
@@ -172,6 +182,9 @@ Skip the modal form and download immediately with default settings:
         ->label('Notes')
         ->defaultValue('N/A'),
 ])
+
+// Disable additional columns
+->disableAdditionalColumns()
 ```
 
 ### Format States
@@ -215,6 +228,23 @@ composer require barryvdh/laravel-snappy
 ->pdfOptions(['paper' => 'a4', 'orientation' => 'landscape'])
 ```
 
+### Page Orientation
+
+```php
+// Set default page orientation for PDF export
+->defaultPageOrientation('landscape')  // Default: 'portrait'
+```
+
+### Preview & Print
+
+```php
+// Disable preview in the modal
+->disablePreview()
+
+// Disable print button
+->disablePrint()
+```
+
 ### Writer Callbacks
 
 Customize the Excel or PDF writer before the file is generated:
@@ -229,6 +259,8 @@ Customize the Excel or PDF writer before the file is generated:
 
 ### Extra View Data
 
+Pass additional data to the PDF/print Blade templates:
+
 ```php
 // Static array
 ->extraViewData(['companyName' => 'Acme Corp'])
@@ -242,40 +274,56 @@ Customize the Excel or PDF writer before the file is generated:
 ### Header Action Specific Options
 
 ```php
-->withFilters()   // Apply active table filters to export
-->withSearch()    // Apply active search to export
-->withSort()      // Apply active sort to export
-```
+// Apply active table filters to export
+->withFilters()
 
-## Preview Component
+// Apply active search to export
+->withSearch()
 
-The package includes a Livewire component for table preview:
+// Apply active sort to export
+->withSort()
 
-```blade
-<livewire:filament-action-export.export-preview
-    :records="$records"
-    :columns="$columns"
-    :extra-data="$extraData"
-/>
+// Modify the query before export
+->modifyQueryUsing(fn ($query) => $query->where('active', true))
+
+// Multiple query modifications (they stack)
+->modifyQueryUsing(fn ($query) => $query->where('active', true))
+->modifyQueryUsing(fn ($query) => $query->where('role', 'admin'))
 ```
 
 ## Config File
+
+All options can be set globally via the config file:
 
 ```php
 // config/filament-action-export.php
 
 return [
-    'pdf_driver'      => env('FILAMENT_EXPORT_PDF_DRIVER', 'dompdf'),
-    'default_format'  => env('FILAMENT_EXPORT_DEFAULT_FORMAT', 'xlsx'),
-    'formats'         => ['csv', 'xlsx', 'pdf'],
-    'chunk_size'      => 1000,
-    'pdf_options'     => [
+    'pdf_driver'                => env('FILAMENT_EXPORT_PDF_DRIVER', 'dompdf'),
+    'default_format'            => env('FILAMENT_EXPORT_DEFAULT_FORMAT', 'xlsx'),
+    'formats'                   => ['csv', 'xlsx', 'pdf'],
+    'csv_delimiter'             => ',',
+    'chunk_size'                => 1000,
+    'time_format'               => 'Y-m-d_H-i',
+    'pdf_options'               => [
         'paper'       => 'a4',
         'orientation' => 'portrait',
     ],
-    'csv_delimiter'   => ',',
-    'preview_enabled' => true,
-    'print_enabled'   => true,
+    'preview_enabled'           => true,
+    'print_enabled'             => true,
+    'use_snappy'                => false,
+    'disable_additional_columns'=> false,
+    'disable_filter_columns'    => false,
+    'disable_file_name'         => false,
+    'disable_file_name_prefix'  => false,
+    'disable_preview'           => false,
+    'icons'                     => [
+        'action'  => 'heroicon-o-arrow-down-tray',
+        'preview' => 'heroicon-o-eye',
+        'export'  => 'heroicon-o-arrow-down-tray',
+        'print'   => 'heroicon-o-printer',
+        'cancel'  => 'heroicon-o-x-circle',
+    ],
 ];
 ```
 
@@ -289,7 +337,9 @@ After publishing the views, you can customize them:
 
 ## Translations
 
-The package includes translations for 9 languages: English, Brazilian Portuguese, Spanish, French, German, Italian, Dutch, Arabic and Turkish. After publishing, add your own translations in `lang/vendor/filament-action-export/`.
+The package includes translations for: English, Brazilian Portuguese, Spanish, French, German, Italian, Dutch, Arabic, and Turkish.
+
+After publishing, add your own translations in `lang/vendor/filament-action-export/`.
 
 ## Testing
 
