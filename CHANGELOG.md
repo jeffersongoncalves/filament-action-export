@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.5.3 - 2026-03-07
+
+### What's Changed
+
+- **Separate preview modal**: Preview data now opens in a dedicated modal with pagination instead of inline static preview
+- **Reactive column filters**: Column filter checkboxes now reflect in Print output on both export and preview modals
+- **Hidden field mechanism**: Added reactive communication between JS and Livewire via `table_view` hidden input
+- **Print on both screens**: Print via hidden iframe works from both the export modal and the preview modal
+- **JS asset registration**: Added `filament-export.js` with `triggerInputEvent()` and `printHTML()` functions
+- Removed `ExportPreview` Livewire component (replaced by `TableView` form component)
+- Removed `preview-section.blade.php` (replaced by modal in `table-view.blade.php`)
+
+**Full Changelog**: https://github.com/jeffersongoncalves/filament-action-export/compare/v1.5.2...v1.5.3
+
 ## v1.5.2 - 2026-03-07
 
 ### Improvement
