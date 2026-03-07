@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## v3.5.1 - 2026-03-07
+
+### Bug Fixes
+
+- Fix: update `Filament\Forms\Get` import to `Filament\Schemas\Components\Utilities\Get` (Filament v5 namespace)
+- Fix: correct `Filament\Forms\Components\Component` docblock namespace to `Filament\Schemas\Components\Component`
+
 ## v3.5.0 - 2026-03-07
 
 ### What's Changed
