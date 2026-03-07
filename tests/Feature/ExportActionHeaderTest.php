@@ -72,7 +72,7 @@ it('chains all configuration methods fluently', function () {
         ->withSearch()
         ->withSort()
         ->snappy()
-        ->userCanSelectColumns()
+        ->disableFilterColumns(false)
         ->excludeColumns(['password'])
         ->extraViewData(['company' => 'Test']);
 

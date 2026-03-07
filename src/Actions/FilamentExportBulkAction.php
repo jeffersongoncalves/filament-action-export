@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace JeffersonGoncalves\FilamentExportAction\Actions;
 
-use Filament\Tables\Actions\BulkAction;
+use Filament\Actions\BulkAction;
 use Illuminate\Database\Eloquent\Collection;
 use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasAdditionalColumns;
 use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasCsvDelimiter;

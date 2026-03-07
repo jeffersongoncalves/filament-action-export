@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace JeffersonGoncalves\FilamentExportAction\Actions;
 
 use Closure;
-use Filament\Tables\Actions\Action;
+use Filament\Actions\Action;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasAdditionalColumns;

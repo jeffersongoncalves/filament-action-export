@@ -63,9 +63,15 @@ it('accepts extra view data as closure', function () {
     expect($action->resolveExtraViewData())->toBe(['dynamic' => 'value']);
 });
 
-it('supports user column selection flag', function () {
+it('supports disabling filter columns', function () {
     $action = FilamentExportBulkAction::make('export')
-        ->userCanSelectColumns();
+        ->disableFilterColumns();
 
-    expect($action)->toBeInstanceOf(FilamentExportBulkAction::class);
+    expect($action->isFilterColumnsDisabled())->toBeTrue();
+});
+
+it('supports enabling filter columns (default)', function () {
+    $action = FilamentExportBulkAction::make('export');
+
+    expect($action->isFilterColumnsDisabled())->toBeFalse();
 });
