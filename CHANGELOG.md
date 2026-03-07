@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## v2.5.0 - 2026-03-07
+
+### What's Changed
+
+#### Bug Fixes
+
+- Fixed tests for renamed/removed methods (disableFilterColumns replaces userCanSelectColumns)
+- Fixed filename resolution assertions to match new behavior
+
+#### New
+
+- Added comprehensive NewTraitFeaturesTest with 52 tests covering all traits
+- Tests for HasPreview, HasPageOrientation, HasAdditionalColumns, HasExportColumns, HasExportFormats, HasFilename, fillDefaultData, config-driven defaults, modifyQueryUsing, and table state flags
+
+**Full Changelog**: https://github.com/jeffersongoncalves/filament-action-export/compare/v2.4.0...v2.5.0
+
 ## v2.4.0 - 2026-03-06
 
 ### What's Changed
