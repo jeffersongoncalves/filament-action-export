@@ -222,7 +222,7 @@ class FilamentExportHeaderAction extends Action
                             $records = $parentAction->getRecords();
                             $html = $parentAction->renderPrintHtml($records, $data);
                             $parentAction->getLivewire()->js(
-                                'var w=window.open("","_blank");w.document.write('.json_encode($html).');w.document.close();'
+                                '(() => { let w=window.open("","_blank");w.document.write('.json_encode($html).');w.document.close(); })()'
                             );
                         }),
                 ];
