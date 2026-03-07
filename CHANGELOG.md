@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## v3.5.0 - 2026-03-07
+
+### What's Changed
+
+#### Bug Fixes
+
+- Fixed Filament v5 namespace imports: `Filament\Tables\Actions\Action` → `Filament\Actions\Action` and `Filament\Tables\Actions\BulkAction` → `Filament\Actions\BulkAction`
+- Fixed tests for renamed/removed methods (disableFilterColumns replaces userCanSelectColumns)
+- Fixed filename resolution assertions to match new behavior
+
+#### New
+
+- Added comprehensive NewTraitFeaturesTest with 52 tests covering all traits
+- Tests for HasPreview, HasPageOrientation, HasAdditionalColumns, HasExportColumns, HasExportFormats, HasFilename, fillDefaultData, config-driven defaults, modifyQueryUsing, and table state flags
+
+**Full Changelog**: https://github.com/jeffersongoncalves/filament-action-export/compare/v3.4.0...v3.5.0
+
 ## v3.4.0 - 2026-03-06
 
 ### What's Changed
