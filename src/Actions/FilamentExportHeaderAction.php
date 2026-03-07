@@ -224,7 +224,7 @@ class FilamentExportHeaderAction extends Action
                             /** @var \Filament\Tables\Contracts\HasTable&\Livewire\Component $livewire */
                             $livewire = $parentAction->getLivewire();
                             $livewire->js(
-                                'var w=window.open("","_blank");w.document.write(' . json_encode($html) . ');w.document.close();'
+                                '(() => { let w=window.open("","_blank");w.document.write(' . json_encode($html) . ');w.document.close(); })()'
                             );
                         }),
                 ];

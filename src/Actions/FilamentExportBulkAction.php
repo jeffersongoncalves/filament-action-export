@@ -118,7 +118,7 @@ class FilamentExportBulkAction extends BulkAction
                             $records = $livewire->getSelectedTableRecords();
                             $html = $parentAction->renderPrintHtml(collect($records), $data);
                             $livewire->js(
-                                'var w=window.open("","_blank");w.document.write(' . json_encode($html) . ');w.document.close();'
+                                '(() => { let w=window.open("","_blank");w.document.write(' . json_encode($html) . ');w.document.close(); })()'
                             );
                         }),
                 ];
