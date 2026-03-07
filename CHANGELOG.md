@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## v3.6.2 - 2026-03-07
+
+### Improvement
+
+- Refactor: use hidden iframe for print instead of opening a new browser tab. Print dialog now appears inline without navigating away.
+
 ## v3.6.1 - 2026-03-07
 
 ### Bug Fix
