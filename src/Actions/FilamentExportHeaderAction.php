@@ -8,6 +8,7 @@ use Closure;
 use Filament\Tables\Actions\Action;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
+use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\CanRefreshTable;
 use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasAdditionalColumns;
 use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasCsvDelimiter;
 use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasDirectDownload;
@@ -17,15 +18,18 @@ use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasExtraViewData;
 use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasFilename;
 use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasFormatStates;
 use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasPageOrientation;
+use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasPaginator;
 use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasPdfDriver;
 use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasPreview;
 use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasTableDataExport;
+use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasUniqueActionId;
 use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasWriterCallbacks;
 use JeffersonGoncalves\FilamentExportAction\Enums\ExportFormat;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class FilamentExportHeaderAction extends Action
 {
+    use CanRefreshTable;
     use HasAdditionalColumns;
     use HasCsvDelimiter;
     use HasDirectDownload;
@@ -35,9 +39,11 @@ class FilamentExportHeaderAction extends Action
     use HasFilename;
     use HasFormatStates;
     use HasPageOrientation;
+    use HasPaginator;
     use HasPdfDriver;
     use HasPreview;
     use HasTableDataExport;
+    use HasUniqueActionId;
     use HasWriterCallbacks;
 
     protected bool $withFilters = false;
@@ -148,6 +154,8 @@ class FilamentExportHeaderAction extends Action
     {
         parent::setUp();
 
+        $this->uniqueActionId('header-action');
+
         // Apply config defaults
         $this->timeFormat(config('filament-action-export.time_format', 'Y-m-d_H-i'));
         $this->disableFileName(config('filament-action-export.disable_file_name', false));
@@ -161,18 +169,27 @@ class FilamentExportHeaderAction extends Action
 
         $this->label(__('filament-action-export::filament-action-export.actions.export'))
             ->modalHeading(__('filament-action-export::filament-action-export.modal.heading'))
-            ->modalSubmitActionLabel(__('filament-action-export::filament-action-export.modal.submit'))
             ->icon(config('filament-action-export.icons.action', 'heroicon-o-arrow-down-tray'))
             ->form(function (): array {
                 if ($this->isDirectDownload()) {
                     return [];
                 }
 
-                $previewRecords = $this->isPreviewEnabled()
-                    ? collect($this->getTableQuery()->limit(10)->get())
-                    : null;
+                // Create paginator for preview
+                $livewire = $this->getLivewire();
+                /** @phpstan-ignore property.notFound */
+                $perPage = $livewire->tableRecordsPerPage === 'all'
+                    ? $this->getTableQuery()->count()
+                    : $livewire->tableRecordsPerPage;
 
-                return $this->buildFormSchema($previewRecords);
+                $paginator = $this->getTableQuery()->paginate(
+                    perPage: (int) $perPage,
+                    pageName: 'exportPage'
+                );
+
+                $this->paginator($paginator);
+
+                return $this->buildFormSchema($paginator);
             })
             ->action(function (array $data): StreamedResponse {
                 $this->fillDefaultData($data);
@@ -206,28 +223,12 @@ class FilamentExportHeaderAction extends Action
                     $userAdditionalColumns,
                 );
             })
-            ->extraModalFooterActions(function (): array {
-                if (! $this->isPrintEnabled() || $this->isDirectDownload()) {
+            ->modalFooterActions(function (): array {
+                if ($this->isDirectDownload()) {
                     return [];
                 }
 
-                $parentAction = $this;
-
-                return [
-                    Action::make('print')
-                        ->label(__('filament-action-export::filament-action-export.actions.print'))
-                        ->icon(config('filament-action-export.icons.print', 'heroicon-o-printer'))
-                        ->color('gray')
-                        ->action(function (array $data) use ($parentAction): void {
-                            $records = $parentAction->getRecords();
-                            $html = $parentAction->renderPrintHtml($records, $data);
-                            /** @var \Filament\Tables\Contracts\HasTable&\Livewire\Component $livewire */
-                            $livewire = $parentAction->getLivewire();
-                            $livewire->js(
-                                '(() => { let f=document.createElement("iframe");f.style.cssText="position:fixed;left:-9999px;width:0;height:0;";document.body.appendChild(f);f.contentDocument.open();f.contentDocument.write('.json_encode($html).');f.contentDocument.close();setTimeout(() => { f.contentWindow.focus();f.contentWindow.print();setTimeout(() => f.remove(), 100); }, 250); })()'
-                            );
-                        }),
-                ];
+                return $this->getExportModalActions();
             });
     }
 }
