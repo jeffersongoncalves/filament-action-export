@@ -205,6 +205,29 @@ class FilamentExportHeaderAction extends Action
                     $pageOrientation,
                     $userAdditionalColumns,
                 );
+            })
+            ->extraModalFooterActions(function (): array {
+                if (! $this->isPrintEnabled() || $this->isDirectDownload()) {
+                    return [];
+                }
+
+                $parentAction = $this;
+
+                return [
+                    Action::make('print')
+                        ->label(__('filament-action-export::filament-action-export.actions.print'))
+                        ->icon(config('filament-action-export.icons.print', 'heroicon-o-printer'))
+                        ->color('gray')
+                        ->action(function (array $data) use ($parentAction): void {
+                            $records = $parentAction->getRecords();
+                            $html = $parentAction->renderPrintHtml($records, $data);
+                            /** @var \Filament\Tables\Contracts\HasTable&\Livewire\Component $livewire */
+                            $livewire = $parentAction->getLivewire();
+                            $livewire->js(
+                                'var w=window.open("","_blank");w.document.write(' . json_encode($html) . ');w.document.close();'
+                            );
+                        }),
+                ];
             });
     }
 }

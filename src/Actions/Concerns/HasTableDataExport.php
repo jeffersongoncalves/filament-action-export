@@ -142,6 +142,40 @@ trait HasTableDataExport
         return $exporter->export($formattedRecords, $columns, $filename);
     }
 
+    public function renderPrintHtml(Collection $records, array $data): string
+    {
+        $this->fillDefaultData($data);
+
+        if (! $this->isFilterColumnsDisabled() && isset($data['filter_columns'])) {
+            $allTableColumns = $this->resolveColumns($this->getTable());
+            $columns = array_intersect_key($allTableColumns, array_flip($data['filter_columns']));
+        } else {
+            $columns = $this->resolveColumns($this->getTable());
+        }
+
+        foreach ($this->getAdditionalColumns() as $column) {
+            $columns[$column->getName()] = $column->getLabel();
+        }
+
+        $formattedRows = $this->getFormattedRows($records, array_keys($columns));
+
+        $userAdditionalColumns = $data['additional_columns'] ?? [];
+        if (! empty($userAdditionalColumns)) {
+            foreach ($userAdditionalColumns as $key => $value) {
+                $columns[$key] = $key;
+            }
+            $formattedRows = array_map(function (array $row) use ($userAdditionalColumns): array {
+                return array_merge($row, $userAdditionalColumns);
+            }, $formattedRows);
+        }
+
+        return view('filament-action-export::print', [
+            'columns' => $columns,
+            'records' => $formattedRows,
+            'title' => $this->getTable()->getHeading() ?? 'Export',
+        ])->render();
+    }
+
     /** @return array<\Filament\Forms\Components\Component> */
     public function buildFormSchema(?Collection $previewRecords = null): array
     {
