@@ -45,7 +45,7 @@ class CsvExporter implements Exporter
         foreach ($records as $record) {
             $row = [];
             foreach ($columnKeys as $key) {
-                $row[] = data_get($record, $key, '');
+                $row[] = is_array($record) ? ($record[$key] ?? '') : data_get($record, $key, '');
             }
             $writer->addRow($row);
         }

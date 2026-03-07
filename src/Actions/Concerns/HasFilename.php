@@ -34,6 +34,11 @@ trait HasFilename
         return $this;
     }
 
+    public function hasCustomFileNamePrefix(): bool
+    {
+        return $this->fileNamePrefix !== null;
+    }
+
     public function disableFileName(bool $condition = true): static
     {
         $this->fileNameEnabled = ! $condition;
@@ -83,6 +88,18 @@ trait HasFilename
             return ($this->fileNameUsing)($this);
         }
 
+        // Auto-set prefix from table heading if not manually set
+        if ($this->fileNamePrefixEnabled && $this->fileNamePrefix === null) {
+            try {
+                $heading = $this->getTable()->getHeading();
+                if ($heading) {
+                    $this->fileNamePrefix = $heading;
+                }
+            } catch (\Throwable) {
+                // Table may not be available
+            }
+        }
+
         $parts = [];
 
         if ($this->fileNamePrefixEnabled && $this->fileNamePrefix !== null) {
@@ -94,16 +111,14 @@ trait HasFilename
         } elseif ($this->fileName !== null) {
             $parts[] = $this->fileName;
         } else {
-            $parts[] = 'export';
+            $parts[] = now()->translatedFormat($this->timeFormat);
         }
-
-        $parts[] = now()->format($this->timeFormat);
 
         return implode('-', $parts);
     }
 
     public function getDefaultFileName(): string
     {
-        return $this->fileName ?? 'export';
+        return $this->fileName ?? now()->translatedFormat($this->timeFormat);
     }
 }

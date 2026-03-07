@@ -4,7 +4,13 @@ declare(strict_types=1);
 
 namespace JeffersonGoncalves\FilamentExportAction\Actions\Concerns;
 
+use Closure;
+use Filament\Tables\Columns\Column;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\HtmlString;
 
 trait HasExportColumns
 {
@@ -14,7 +20,10 @@ trait HasExportColumns
     /** @var array<string> */
     protected array $excludedColumns = [];
 
-    protected bool $canSelectColumns = false;
+    /** @var array<Column> */
+    protected array $extraColumns = [];
+
+    protected bool $filterColumnsDisabled = false;
 
     protected bool $withHiddenColumns = false;
 
@@ -36,11 +45,30 @@ trait HasExportColumns
         return $this;
     }
 
-    public function userCanSelectColumns(bool $enabled = true): static
+    /** @param array<Column> $columns */
+    public function withColumns(array $columns): static
     {
-        $this->canSelectColumns = $enabled;
+        $this->extraColumns = $columns;
 
         return $this;
+    }
+
+    /** @return array<Column> */
+    public function getWithColumns(): array
+    {
+        return $this->extraColumns;
+    }
+
+    public function disableFilterColumns(bool $condition = true): static
+    {
+        $this->filterColumnsDisabled = $condition;
+
+        return $this;
+    }
+
+    public function isFilterColumnsDisabled(): bool
+    {
+        return $this->filterColumnsDisabled;
     }
 
     public function withHiddenColumns(bool $enabled = true): static
@@ -48,6 +76,11 @@ trait HasExportColumns
         $this->withHiddenColumns = $enabled;
 
         return $this;
+    }
+
+    public function shouldShowHiddenColumns(): bool
+    {
+        return $this->withHiddenColumns;
     }
 
     public function disableTableColumns(bool $condition = true): static
@@ -63,35 +96,32 @@ trait HasExportColumns
     }
 
     /**
-     * @return array<string, string> key = field name, value = column label
+     * Get Column objects from the table.
+     *
+     * @return array<string, Column>
      */
-    public function resolveColumns(Table $table): array
+    public function resolveColumnObjects(Table $table): array
     {
         if ($this->disableTableColumns) {
-            return [];
+            $columns = [];
+        } else {
+            $columns = $this->withHiddenColumns
+                ? $table->getColumns()
+                : $table->getVisibleColumns();
         }
 
         if ($this->exportColumns !== null) {
-            $tableColumns = $table->getColumns();
-            $columns = [];
-
-            foreach ($this->exportColumns as $columnName) {
-                if (isset($tableColumns[$columnName])) {
-                    $columns[$columnName] = $tableColumns[$columnName]->getLabel() ?: $columnName;
-                } else {
-                    $columns[$columnName] = $columnName;
+            $filtered = [];
+            foreach ($this->exportColumns as $name) {
+                if (isset($columns[$name])) {
+                    $filtered[$name] = $columns[$name];
                 }
             }
-        } else {
-            $columns = [];
-            $tableColumns = $this->withHiddenColumns
-                ? $table->getColumns()
-                : $table->getVisibleColumns();
+            $columns = $filtered;
+        }
 
-            foreach ($tableColumns as $column) {
-                $name = $column->getName();
-                $columns[$name] = $column->getLabel() ?: $name;
-            }
+        foreach ($this->extraColumns as $column) {
+            $columns[$column->getName()] = $column;
         }
 
         foreach ($this->excludedColumns as $excluded) {
@@ -99,5 +129,74 @@ trait HasExportColumns
         }
 
         return $columns;
+    }
+
+    /**
+     * Get name => label mapping from Column objects.
+     *
+     * @return array<string, string>
+     */
+    public function resolveColumns(Table $table): array
+    {
+        $result = [];
+
+        foreach ($this->resolveColumnObjects($table) as $name => $column) {
+            $label = $column->getLabel();
+            $result[$name] = $label instanceof HtmlString
+                ? strip_tags((string) $label)
+                : ($label ?: $name);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get formatted state for a column/record using Filament's Column formatting.
+     */
+    public static function getColumnState(Table $table, Column $column, Model $record, int $index, array $formatStates = []): ?string
+    {
+        $column->rowLoop((object) [
+            'index' => $index,
+            'iteration' => $index + 1,
+        ]);
+
+        $column->record($record);
+        $column->table($table);
+
+        if (array_key_exists($column->getName(), $formatStates) && $formatStates[$column->getName()] instanceof Closure) {
+            $closure = $formatStates[$column->getName()];
+            $dependencies = [];
+
+            foreach ((new \ReflectionFunction($closure))->getParameters() as $parameter) {
+                $dependencies[] = match ($parameter->getName()) {
+                    'table' => $table,
+                    'column' => $column,
+                    'record' => $record,
+                    'index' => $index,
+                    default => null,
+                };
+            }
+
+            return $closure(...$dependencies);
+        }
+
+        $state = $column->getState();
+
+        if (in_array(\Filament\Tables\Columns\Concerns\CanFormatState::class, class_uses_recursive($column::class))) {
+            /** @phpstan-ignore-next-line */
+            $state = $column->formatState($state);
+        }
+
+        if (is_array($state)) {
+            $state = implode(', ', $state);
+        } elseif ($column instanceof ImageColumn) {
+            $state = $column->getImageUrl();
+        } elseif ($column instanceof ViewColumn) {
+            $rendered = $column->render();
+            $html = $rendered instanceof HtmlString ? $rendered->toHtml() : $rendered->render();
+            $state = trim(preg_replace('/\s+/', ' ', strip_tags($html)));
+        }
+
+        return (string) ($state ?? '');
     }
 }
