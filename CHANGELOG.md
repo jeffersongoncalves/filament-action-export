@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## v2.6.0 - 2026-03-07
+
+### New Feature
+
+- **Print button**: Added a Print button to the export modal that opens table data in a new browser window and triggers `window.print()`. Works for both HeaderAction and BulkAction. Respects `isPrintEnabled()` and `isDirectDownload()` settings.
+
 ## v2.5.1 - 2026-03-07
 
 ### Bug Fix
