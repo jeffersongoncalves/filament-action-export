@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace JeffersonGoncalves\FilamentExportAction;
 
 use Filament\Support\Assets\Css;
+use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
-use JeffersonGoncalves\FilamentExportAction\Livewire\ExportPreview;
-use Livewire\Livewire;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -28,8 +27,7 @@ class FilamentExportServiceProvider extends PackageServiceProvider
     {
         FilamentAsset::register([
             Css::make(static::$name, __DIR__.'/../resources/dist/filament-action-export.css'),
+            Js::make(static::$name, __DIR__.'/../resources/js/filament-export.js'),
         ], 'jeffersongoncalves/filament-action-export');
-
-        Livewire::component('filament-action-export.export-preview', ExportPreview::class);
     }
 }

@@ -1,31 +1,67 @@
-<div>
-    <div class="fi-export-toolbar">
-        <button
-            type="button"
-            wire:click="print"
-            class="fi-export-print-btn"
-        >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18.75 7.125H5.25" />
-            </svg>
-            {{ __('filament-action-export::filament-action-export.actions.print') }}
-        </button>
-    </div>
+@php
+    $uniqueActionId = $getUniqueActionId();
+    $statePath = $getStatePath();
+    $shouldRefresh = $shouldRefresh();
 
-    <div class="fi-export-table-wrapper">
-        <table class="fi-export-table">
+    $data = $this->mountedTableBulkAction
+        ? $this->getMountedTableBulkActionForm()->getState()
+        : $this->getMountedTableActionForm()->getState();
+
+    $shouldPrint = is_array($data)
+        && array_key_exists('table_view', $data)
+        && $data['table_view'] == 'print-' . $uniqueActionId;
+
+    $printContent = $shouldPrint ? $getPrintHTML() : '';
+    $columns = $getExportColumns();
+    $rows = $getRows();
+    $paginator = $getPaginator();
+@endphp
+
+<input id="{{ $statePath }}" type="hidden" {{ $applyStateBindingModifiers('wire:model') }}="{{ $statePath }}">
+
+<x-filament::modal id="preview-modal-{{ $uniqueActionId }}" width="7xl" display-classes="block"
+    x-data="{
+        shouldRefresh: {{ $shouldRefresh ? 'true' : 'false' }},
+        shouldPrint: {{ $shouldPrint ? 'true' : 'false' }}
+    }"
+    x-init="
+        $wire.$on('open-preview-modal-{{ $uniqueActionId }}', function() {
+            triggerInputEvent('{{ $statePath }}', '{{ uniqid() }}');
+            isOpen = true;
+        });
+
+        $wire.$on('close-preview-modal-{{ $uniqueActionId }}', () => { isOpen = false; });
+
+        if (shouldRefresh) {
+            $wire.dispatch('close-preview-modal-{{ $uniqueActionId }}');
+            triggerInputEvent('{{ $statePath }}', '{{ uniqid() }}');
+            $wire.dispatch('open-preview-modal-{{ $uniqueActionId }}');
+        }
+
+        if (shouldPrint) {
+            window.printHTML(`{!! $printContent !!}`, '{{ $statePath }}', '{{ $uniqueActionId }}');
+        }
+    "
+    x-on:keydown.window.escape.capture="isOpen = false"
+    :heading="$getPreviewModalHeading()">
+
+    <div class="fi-export-preview-wrapper space-y-4">
+        <table class="fi-export-table"
+            x-init="$wire.$on('print-table-{{ $uniqueActionId }}', function() {
+                triggerInputEvent('{{ $statePath }}', 'print-{{ $uniqueActionId }}')
+            })">
             <thead>
                 <tr>
-                    @foreach ($columns as $label)
+                    @foreach ($columns as $name => $label)
                         <th>{{ $label }}</th>
                     @endforeach
                 </tr>
             </thead>
             <tbody>
-                @forelse ($records as $record)
+                @forelse ($rows as $row)
                     <tr>
                         @foreach (array_keys($columns) as $key)
-                            <td>{{ is_array($record) ? ($record[$key] ?? '') : data_get($record, $key, '') }}</td>
+                            <td>{{ $row[$key] ?? '' }}</td>
                         @endforeach
                     </tr>
                 @empty
@@ -37,13 +73,32 @@
                 @endforelse
             </tbody>
         </table>
-    </div>
-</div>
 
-@script
-<script>
-    $wire.on('print-table', () => {
-        window.print();
-    });
-</script>
-@endscript
+        @if ($paginator && $paginator->hasPages())
+            <div class="fi-export-pagination px-3 py-3">
+                {{ $paginator->onEachSide(1)->links() }}
+            </div>
+        @endif
+    </div>
+
+    <x-slot name="footer">
+        <div class="flex gap-x-3">
+            <x-filament::button
+                type="button"
+                color="gray"
+                icon="heroicon-o-printer"
+                x-on:click="triggerInputEvent('{{ $statePath }}', 'print-{{ $uniqueActionId }}')"
+            >
+                {{ __('filament-action-export::filament-action-export.actions.print') }}
+            </x-filament::button>
+
+            <x-filament::button
+                type="button"
+                color="gray"
+                x-on:click="isOpen = false"
+            >
+                {{ __('filament-action-export::filament-action-export.actions.close') }}
+            </x-filament::button>
+        </div>
+    </x-slot>
+</x-filament::modal>

@@ -6,6 +6,8 @@ namespace JeffersonGoncalves\FilamentExportAction\Actions;
 
 use Filament\Actions\BulkAction;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
+use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\CanRefreshTable;
 use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasAdditionalColumns;
 use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasCsvDelimiter;
 use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasDirectDownload;
@@ -15,15 +17,18 @@ use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasExtraViewData;
 use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasFilename;
 use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasFormatStates;
 use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasPageOrientation;
+use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasPaginator;
 use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasPdfDriver;
 use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasPreview;
 use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasTableDataExport;
+use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasUniqueActionId;
 use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasWriterCallbacks;
 use JeffersonGoncalves\FilamentExportAction\Enums\ExportFormat;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class FilamentExportBulkAction extends BulkAction
 {
+    use CanRefreshTable;
     use HasAdditionalColumns;
     use HasCsvDelimiter;
     use HasDirectDownload;
@@ -33,9 +38,11 @@ class FilamentExportBulkAction extends BulkAction
     use HasFilename;
     use HasFormatStates;
     use HasPageOrientation;
+    use HasPaginator;
     use HasPdfDriver;
     use HasPreview;
     use HasTableDataExport;
+    use HasUniqueActionId;
     use HasWriterCallbacks;
 
     public static function getDefaultName(): ?string
@@ -43,9 +50,19 @@ class FilamentExportBulkAction extends BulkAction
         return 'export';
     }
 
+    public function getRecords(): \Illuminate\Support\Collection
+    {
+        /** @var \Filament\Tables\Contracts\HasTable&\Livewire\Component $livewire */
+        $livewire = $this->getLivewire();
+
+        return collect($livewire->getSelectedTableRecords());
+    }
+
     protected function setUp(): void
     {
         parent::setUp();
+
+        $this->uniqueActionId('bulk-action');
 
         // Apply config defaults
         $this->timeFormat(config('filament-action-export.time_format', 'Y-m-d_H-i'));
@@ -60,14 +77,30 @@ class FilamentExportBulkAction extends BulkAction
 
         $this->label(__('filament-action-export::filament-action-export.actions.export'))
             ->modalHeading(__('filament-action-export::filament-action-export.modal.heading'))
-            ->modalSubmitActionLabel(__('filament-action-export::filament-action-export.modal.submit'))
             ->icon(config('filament-action-export.icons.action', 'heroicon-o-arrow-down-tray'))
-            ->form(function (Collection $records): array {
+            ->schema(function (Collection $records): array {
                 if ($this->isDirectDownload()) {
                     return [];
                 }
 
-                return $this->buildFormSchema($records);
+                // Create manual paginator for bulk action records
+                $livewire = $this->getLivewire();
+                $currentPage = LengthAwarePaginator::resolveCurrentPage('exportPage');
+                $perPage = $livewire->tableRecordsPerPage === 'all'
+                    ? $records->count()
+                    : (int) $livewire->tableRecordsPerPage;
+
+                $paginator = new LengthAwarePaginator(
+                    $records->forPage($currentPage, $perPage),
+                    $records->count(),
+                    $perPage,
+                    $currentPage,
+                    ['pageName' => 'exportPage']
+                );
+
+                $this->paginator($paginator);
+
+                return $this->buildFormSchema($paginator);
             })
             ->action(function (array $data, Collection $records): StreamedResponse {
                 $this->fillDefaultData($data);
@@ -100,26 +133,12 @@ class FilamentExportBulkAction extends BulkAction
                     $userAdditionalColumns,
                 );
             })
-            ->extraModalFooterActions(function (): array {
-                if (! $this->isPrintEnabled() || $this->isDirectDownload()) {
+            ->modalFooterActions(function (): array {
+                if ($this->isDirectDownload()) {
                     return [];
                 }
 
-                $parentAction = $this;
-
-                return [
-                    \Filament\Actions\Action::make('print')
-                        ->label(__('filament-action-export::filament-action-export.actions.print'))
-                        ->icon(config('filament-action-export.icons.print', 'heroicon-o-printer'))
-                        ->color('gray')
-                        ->action(function (array $data) use ($parentAction): void {
-                            $records = $parentAction->getSelectedRecords();
-                            $html = $parentAction->renderPrintHtml(collect($records), $data);
-                            $parentAction->getLivewire()->js(
-                                '(() => { let f=document.createElement("iframe");f.style.cssText="position:fixed;left:-9999px;width:0;height:0;";document.body.appendChild(f);f.contentDocument.open();f.contentDocument.write('.json_encode($html).');f.contentDocument.close();setTimeout(() => { f.contentWindow.focus();f.contentWindow.print();setTimeout(() => f.remove(), 100); }, 250); })()'
-                            );
-                        }),
-                ];
+                return $this->getBulkExportModalActions();
             });
     }
 }
