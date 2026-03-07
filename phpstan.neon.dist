@@ -17,9 +17,3 @@ parameters:
         -
             message: '#should return static\(.+\) but returns#'
             reportUnmatched: false
-        -
-            message: '#Call to an undefined method .+::getTable\(\)#'
-            reportUnmatched: false
-        -
-            message: '#Call to an undefined method .+::getVisibleColumns\(\)#'
-            reportUnmatched: false

@@ -6,6 +6,7 @@ return [
     'formats' => ['csv', 'xlsx', 'pdf'],
     'csv_delimiter' => ',',
     'chunk_size' => 1000,
+    'time_format' => 'Y-m-d_H-i',
     'pdf_options' => [
         'paper' => 'a4',
         'orientation' => 'portrait',
@@ -13,6 +14,11 @@ return [
     'preview_enabled' => true,
     'print_enabled' => true,
     'use_snappy' => false,
+    'disable_additional_columns' => false,
+    'disable_filter_columns' => false,
+    'disable_file_name' => false,
+    'disable_file_name_prefix' => false,
+    'disable_preview' => false,
     'icons' => [
         'action' => 'heroicon-o-arrow-down-tray',
         'preview' => 'heroicon-o-eye',
