@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.5.10 - 2026-03-08
+
+### What's Changed
+
+- fix: use direct array access in print template instead of `data_get()` — `data_get()` interprets dots as nested array traversal, causing relationship columns (e.g. `roles.name`) to show empty in print output
+
 ## v1.5.9 - 2026-03-08
 
 ### What's Changed
