@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## v2.6.10 - 2026-03-08
+
+### What's Changed
+
+- fix: eager-load relationship columns (e.g. `roles.name`) for export/print to prevent N+1 queries and empty data in apps with `preventLazyLoading()`
+
 ## v2.6.9 - 2026-03-08
 
 ### Fixed
