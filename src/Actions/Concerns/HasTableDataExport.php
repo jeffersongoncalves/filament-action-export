@@ -262,7 +262,7 @@ trait HasTableDataExport
             $updateTableView = function ($component, Get $get, $state) use ($action) {
                 // Resolve columns based on filter_columns state
                 $allColumns = $action->resolveColumns($action->getTable());
-                $filteredColumnNames = $get('../filter_columns') ?? [];
+                $filteredColumnNames = $get('filter_columns') ?? [];
 
                 if (! empty($filteredColumnNames) && ! $action->isFilterColumnsDisabled()) {
                     $columns = array_intersect_key($allColumns, array_flip($filteredColumnNames));
@@ -280,10 +280,17 @@ trait HasTableDataExport
                 if ($state === 'print-'.$action->getUniqueActionId()) {
                     $data = [
                         'filter_columns' => $filteredColumnNames,
-                        'additional_columns' => $get('../additional_columns') ?? [],
+                        'additional_columns' => $get('additional_columns') ?? [],
                     ];
                     $records = $action->getRecords();
                     $printHTML = $action->renderPrintHtml($records, $data);
+
+                    // Dispatch event to trigger print in browser via Alpine listener
+                    $component->getLivewire()->dispatch(
+                        'execute-print-'.$action->getUniqueActionId(),
+                        base64Html: base64_encode($printHTML),
+                        statePath: $component->getStatePath(),
+                    );
                 }
 
                 // Get paginated rows for preview

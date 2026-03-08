@@ -3,10 +3,6 @@
     $statePath = $getStatePath();
     $shouldRefresh = $shouldRefresh();
 
-    $stateValue = $getState();
-    $shouldPrint = $stateValue === 'print-' . $uniqueActionId;
-
-    $printContent = $shouldPrint ? $getPrintHTML() : '';
     $columns = $getAllColumns();
     $rows = $getRows();
     $paginator = $getPaginator();
@@ -28,19 +24,20 @@
             triggerInputEvent('{{ $statePath }}', '{{ uniqid() }}');
             $wire.dispatch('open-preview-modal-{{ $uniqueActionId }}');
         }
-
-        if ({{ $shouldPrint ? 'true' : 'false' }}) {
-            window.printHTML(`{!! $printContent !!}`, '{{ $statePath }}', '{{ $uniqueActionId }}');
-        }
     "
     x-on:keydown.window.escape.capture="isOpen = false"
     :heading="$getPreviewModalHeading()">
 
     <div class="fi-export-preview-wrapper space-y-4">
         <table class="fi-export-table"
-            x-init="$wire.$on('print-table-{{ $uniqueActionId }}', function() {
-                triggerInputEvent('{{ $statePath }}', 'print-{{ $uniqueActionId }}')
-            })">
+            x-init="
+                $wire.$on('print-table-{{ $uniqueActionId }}', function() {
+                    triggerInputEvent('{{ $statePath }}', 'print-{{ $uniqueActionId }}')
+                });
+                $wire.$on('execute-print-{{ $uniqueActionId }}', function({ base64Html, statePath }) {
+                    window.printHTML(base64Html, statePath, '{{ $uniqueActionId }}');
+                });
+            ">
             <thead>
                 <tr>
                     @foreach ($columns as $name => $label)
