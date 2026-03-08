@@ -3,13 +3,8 @@
     $statePath = $getStatePath();
     $shouldRefresh = $shouldRefresh();
 
-    $data = $this->mountedTableBulkAction
-        ? $this->getMountedTableBulkActionForm()->getState()
-        : $this->getMountedTableActionForm()->getState();
-
-    $shouldPrint = is_array($data)
-        && array_key_exists('table_view', $data)
-        && $data['table_view'] == 'print-' . $uniqueActionId;
+    $stateValue = $getState();
+    $shouldPrint = $stateValue === 'print-' . $uniqueActionId;
 
     $printContent = $shouldPrint ? $getPrintHTML() : '';
     $columns = $getAllColumns();
