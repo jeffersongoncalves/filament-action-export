@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## v2.6.5 - 2026-03-08
+
+### Fixed
+
+- Fix potential `Property [mountedTableBulkAction] not found` error - replaced direct Livewire property access with component `getState()` method in table-view blade
+
 ## v2.6.4 - 2026-03-08
 
 ### Fixed
