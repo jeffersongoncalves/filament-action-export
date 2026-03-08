@@ -68,7 +68,7 @@
             @forelse ($records as $record)
                 <tr>
                     @foreach (array_keys($columns) as $key)
-                        <td>{{ data_get($record, $key, '') }}</td>
+                        <td>{{ $record[$key] ?? '' }}</td>
                     @endforeach
                 </tr>
             @empty
