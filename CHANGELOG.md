@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## v3.6.12 - 2026-03-08
+
+### Fixed
+
+- Removed title heading from print and PDF templates, showing only the table
+
 ## v3.6.11 - 2026-03-08
 
 ### What's Changed
