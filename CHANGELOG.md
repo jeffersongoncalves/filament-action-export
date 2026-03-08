@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.5.4 - 2026-03-08
+
+### Fixed
+
+- Simplified print state detection in table-view blade - replaced direct Livewire property access with component `getState()` method
+
 ## v1.5.3 - 2026-03-07
 
 ### What's Changed
