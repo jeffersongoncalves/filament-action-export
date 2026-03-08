@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## v3.6.7 - 2026-03-08
+
+### Fixed
+
+- Fix empty print content - replaced `$livewire->getMountedTableActionForm()->getState()` with `Get $get('../field')` in `afterStateUpdated` callback. The Livewire form methods don't exist in Filament v5, causing the callback to fail silently.
+
 ## v3.6.6 - 2026-03-08
 
 ### Fixed
