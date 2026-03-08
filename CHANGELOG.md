@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## v3.6.8 - 2026-03-08
+
+### Fixed
+
+- Fix empty print output - replaced `htmlentities()` with `base64_encode()` in PHP and `atob()` in JS to correctly pass HTML through the template literal without breaking the iframe rendering
+
 ## v3.6.7 - 2026-03-08
 
 ### Fixed
