@@ -10,6 +10,8 @@ use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Get;
+use Filament\Tables\Columns\Column;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
@@ -67,6 +69,9 @@ trait HasTableDataExport
             $columnObjects = array_intersect_key($columnObjects, array_flip($filteredColumnNames));
         }
 
+        // Eager-load relationships needed by columns to prevent N+1 queries
+        $this->eagerLoadColumnRelationships($records, $columnObjects);
+
         $formatStates = $this->getFormatStates();
         $additionalColumns = $this->getAdditionalColumns();
         $rows = [];
@@ -97,6 +102,42 @@ trait HasTableDataExport
         }
 
         return $rows;
+    }
+
+    /**
+     * Eager-load relationships needed by export columns to prevent N+1 queries.
+     *
+     * @param  array<string, Column>  $columnObjects
+     */
+    protected function eagerLoadColumnRelationships(Collection $records, array $columnObjects): void
+    {
+        $firstRecord = $records->first();
+
+        if (! $firstRecord instanceof Model) {
+            return;
+        }
+
+        $relationships = [];
+
+        foreach ($columnObjects as $name => $column) {
+            if (! str_contains($name, '.')) {
+                continue;
+            }
+
+            $relationshipName = (string) str($name)->beforeLast('.');
+            $firstPart = (string) str($relationshipName)->before('.');
+
+            if ($firstRecord->isRelation($firstPart)) {
+                $relationships[] = $relationshipName;
+            }
+        }
+
+        if (empty($relationships)) {
+            return;
+        }
+
+        (new EloquentCollection($records->filter(fn ($record) => $record instanceof Model)->all()))
+            ->loadMissing(array_unique($relationships));
     }
 
     public function performExport(
