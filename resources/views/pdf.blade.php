@@ -11,19 +11,9 @@
             color: #333;
             margin: 20px;
         }
-        h1 {
-            font-size: 18px;
-            margin-bottom: 5px;
-        }
-        .company-name {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 15px;
-        }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
         }
         th {
             background-color: #f3f4f6;
@@ -45,12 +35,6 @@
     </style>
 </head>
 <body>
-    @isset($companyName)
-        <div class="company-name">{{ $companyName }}</div>
-    @endisset
-
-    <h1>{{ $title ?? 'Export' }}</h1>
-
     <table>
         <thead>
             <tr>
@@ -63,7 +47,7 @@
             @forelse ($records as $record)
                 <tr>
                     @foreach (array_keys($columns) as $key)
-                        <td>{{ is_array($record) ? ($record[$key] ?? '') : data_get($record, $key, '') }}</td>
+                        <td>{{ $record[$key] ?? '' }}</td>
                     @endforeach
                 </tr>
             @empty
