@@ -15,10 +15,6 @@
 <input id="{{ $statePath }}" type="hidden" {{ $applyStateBindingModifiers('wire:model') }}="{{ $statePath }}">
 
 <x-filament::modal id="preview-modal-{{ $uniqueActionId }}" width="7xl" display-classes="block"
-    x-data="{
-        shouldRefresh: {{ $shouldRefresh ? 'true' : 'false' }},
-        shouldPrint: {{ $shouldPrint ? 'true' : 'false' }}
-    }"
     x-init="
         $wire.$on('open-preview-modal-{{ $uniqueActionId }}', function() {
             triggerInputEvent('{{ $statePath }}', '{{ uniqid() }}');
@@ -27,13 +23,13 @@
 
         $wire.$on('close-preview-modal-{{ $uniqueActionId }}', () => { isOpen = false; });
 
-        if (shouldRefresh) {
+        if ({{ $shouldRefresh ? 'true' : 'false' }}) {
             $wire.dispatch('close-preview-modal-{{ $uniqueActionId }}');
             triggerInputEvent('{{ $statePath }}', '{{ uniqid() }}');
             $wire.dispatch('open-preview-modal-{{ $uniqueActionId }}');
         }
 
-        if (shouldPrint) {
+        if ({{ $shouldPrint ? 'true' : 'false' }}) {
             window.printHTML(`{!! $printContent !!}`, '{{ $statePath }}', '{{ $uniqueActionId }}');
         }
     "
