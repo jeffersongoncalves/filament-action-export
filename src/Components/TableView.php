@@ -38,8 +38,8 @@ class TableView extends Component
     public static function make(string $name = 'table_view'): static
     {
         $static = app(static::class);
-        $static->name($name);
-        $static->setUp();
+        $static->statePath($name);
+        $static->configure();
 
         return $static;
     }
