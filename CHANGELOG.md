@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## v3.6.4 - 2026-03-08
+
+### Fixed
+
+- Fix `Method TableView::name does not exist` error - use `statePath()` instead of `name()` in `TableView::make()` for Filament v5 compatibility
+
 ## v3.6.3 - 2026-03-08
 
 ### What's Changed
