@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.5.8 - 2026-03-08
+
+### Fixed
+
+- Fix print showing empty data: use correct `$get()` paths without `../` prefix (resolved to wrong state path)
+- Use Livewire dispatch event to trigger print in browser instead of relying on Alpine x-init re-execution
+
 ## v1.5.7 - 2026-03-08
 
 ### Fixed
