@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## v2.6.6 - 2026-03-08
+
+### Fixed
+
+- Fix `shouldRefresh is not defined` Alpine.js error - Filament's modal component overrides `x-data`, so custom variables were lost. Now inlines PHP boolean values directly in `x-init` as JS literals.
+
 ## v2.6.5 - 2026-03-08
 
 ### Fixed
