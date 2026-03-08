@@ -13,14 +13,14 @@ function triggerInputEvent(statePath, value) {
     input.dispatchEvent(new Event('input', { bubbles: true }));
 }
 
-function printHTML(html, statePath, uniqueActionId) {
+function printHTML(base64Html, statePath, uniqueActionId) {
     let iframe = document.createElement("iframe");
 
     let random = Math.floor(Math.random() * 99999);
 
     iframe.id = `print-${random}`;
 
-    iframe.srcdoc = html;
+    iframe.srcdoc = atob(base64Html);
 
     document.body.append(iframe);
 
