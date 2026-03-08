@@ -13,7 +13,6 @@ use Filament\Schemas\Components\Utilities\Get;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
-use JeffersonGoncalves\FilamentExportAction\Actions\FilamentExportBulkAction;
 use JeffersonGoncalves\FilamentExportAction\Components\TableView;
 use JeffersonGoncalves\FilamentExportAction\Enums\ExportFormat;
 use JeffersonGoncalves\FilamentExportAction\Exporters\Contracts\Exporter;
@@ -260,14 +259,10 @@ trait HasTableDataExport
         if ($this->isPreviewEnabled() && $paginator !== null) {
             $action = $this;
 
-            $updateTableView = function ($component, $livewire) use ($action) {
-                $data = $action instanceof FilamentExportBulkAction
-                    ? $livewire->getMountedTableBulkActionForm()->getState()
-                    : $livewire->getMountedTableActionForm()->getState();
-
+            $updateTableView = function ($component, Get $get, $state) use ($action) {
                 // Resolve columns based on filter_columns state
                 $allColumns = $action->resolveColumns($action->getTable());
-                $filteredColumnNames = $data['filter_columns'] ?? [];
+                $filteredColumnNames = $get('../filter_columns') ?? [];
 
                 if (! empty($filteredColumnNames) && ! $action->isFilterColumnsDisabled()) {
                     $columns = array_intersect_key($allColumns, array_flip($filteredColumnNames));
@@ -282,8 +277,11 @@ trait HasTableDataExport
 
                 // Check if this is a print request
                 $printHTML = '';
-                $tableViewValue = $data['table_view'] ?? '';
-                if ($tableViewValue === 'print-'.$action->getUniqueActionId()) {
+                if ($state === 'print-'.$action->getUniqueActionId()) {
+                    $data = [
+                        'filter_columns' => $filteredColumnNames,
+                        'additional_columns' => $get('../additional_columns') ?? [],
+                    ];
                     $records = $action->getRecords();
                     $printHTML = $action->renderPrintHtml($records, $data);
                 }
@@ -297,9 +295,6 @@ trait HasTableDataExport
                         array_keys($columns)
                     );
                 }
-
-                // Reset pagination on filter change
-                $livewire->resetPage('exportPage');
 
                 $component
                     ->exportColumns($columns)
