@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.5.6 - 2026-03-08
+
+### Fixed
+
+- Refactor `afterStateUpdated` callback to use `Get $get('../field')` instead of Livewire form methods for reading sibling form field values.
+
 ## v1.5.5 - 2026-03-08
 
 ### Fixed
