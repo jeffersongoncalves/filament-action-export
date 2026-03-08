@@ -105,7 +105,7 @@ class TableView extends Component
 
     public function getPrintHTML(): string
     {
-        return htmlentities($this->printHTML);
+        return base64_encode($this->printHTML);
     }
 
     public function getPreviewModalHeading(): string
