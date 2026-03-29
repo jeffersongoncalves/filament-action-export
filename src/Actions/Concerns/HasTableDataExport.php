@@ -9,6 +9,7 @@ use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Tables\Columns\Column;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
@@ -219,7 +220,7 @@ trait HasTableDataExport
         ])->render();
     }
 
-    /** @return array<\Filament\Schemas\Components\Component> */
+    /** @return array<Component> */
     public function buildFormSchema(?LengthAwarePaginator $paginator = null): array
     {
         // Auto-set file name prefix from table heading

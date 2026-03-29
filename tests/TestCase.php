@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace JeffersonGoncalves\FilamentExportAction\Tests;
 
+use Barryvdh\DomPDF\ServiceProvider;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use JeffersonGoncalves\FilamentExportAction\FilamentExportServiceProvider;
+use Livewire\LivewireServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 
 abstract class TestCase extends OrchestraTestCase
@@ -21,8 +23,8 @@ abstract class TestCase extends OrchestraTestCase
     protected function getPackageProviders($app): array
     {
         return [
-            \Livewire\LivewireServiceProvider::class,
-            \Barryvdh\DomPDF\ServiceProvider::class,
+            LivewireServiceProvider::class,
+            ServiceProvider::class,
             FilamentExportServiceProvider::class,
         ];
     }

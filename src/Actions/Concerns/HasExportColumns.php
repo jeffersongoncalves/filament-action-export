@@ -6,6 +6,7 @@ namespace JeffersonGoncalves\FilamentExportAction\Actions\Concerns;
 
 use Closure;
 use Filament\Tables\Columns\Column;
+use Filament\Tables\Columns\Concerns\CanFormatState;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Table;
@@ -182,7 +183,7 @@ trait HasExportColumns
 
         $state = $column->getState();
 
-        if (in_array(\Filament\Tables\Columns\Concerns\CanFormatState::class, class_uses_recursive($column::class))) {
+        if (in_array(CanFormatState::class, class_uses_recursive($column::class))) {
             /** @phpstan-ignore-next-line */
             $state = $column->formatState($state);
         }
