@@ -6,6 +6,7 @@ namespace JeffersonGoncalves\FilamentExportAction\Actions\Concerns;
 
 use Filament\Actions\StaticAction;
 use Filament\Forms\Components\CheckboxList;
+use Filament\Forms\Components\Component;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -219,7 +220,7 @@ trait HasTableDataExport
         ])->render();
     }
 
-    /** @return array<\Filament\Forms\Components\Component> */
+    /** @return array<Component> */
     public function buildFormSchema(?LengthAwarePaginator $paginator = null): array
     {
         // Auto-set file name prefix from table heading

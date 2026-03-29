@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace JeffersonGoncalves\FilamentExportAction\Exporters;
 
+use Barryvdh\DomPDF\Facade\Pdf;
+use Barryvdh\Snappy\Facades\SnappyPdf;
 use Closure;
 use Illuminate\Support\Collection;
 use JeffersonGoncalves\FilamentExportAction\Exporters\Contracts\Exporter;
@@ -62,12 +64,12 @@ class PdfExporter implements Exporter
         $paper = $this->pdfOptions['paper'] ?? config('filament-action-export.pdf_options.paper', 'a4');
         $orientation = $this->pdfOptions['orientation'] ?? config('filament-action-export.pdf_options.orientation', 'portrait');
 
-        if ($this->driver === 'snappy' && class_exists(\Barryvdh\Snappy\Facades\SnappyPdf::class)) {
-            $pdf = \Barryvdh\Snappy\Facades\SnappyPdf::loadHTML($html)
+        if ($this->driver === 'snappy' && class_exists(SnappyPdf::class)) {
+            $pdf = SnappyPdf::loadHTML($html)
                 ->setPaper($paper)
                 ->setOrientation($orientation);
         } else {
-            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadHTML($html)
+            $pdf = Pdf::loadHTML($html)
                 ->setPaper($paper, $orientation);
         }
 

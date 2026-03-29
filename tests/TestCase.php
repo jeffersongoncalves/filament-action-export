@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace JeffersonGoncalves\FilamentExportAction\Tests;
 
+use Barryvdh\DomPDF\ServiceProvider;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use JeffersonGoncalves\FilamentExportAction\FilamentExportServiceProvider;
@@ -21,7 +22,7 @@ abstract class TestCase extends OrchestraTestCase
     protected function getPackageProviders($app): array
     {
         return [
-            \Barryvdh\DomPDF\ServiceProvider::class,
+            ServiceProvider::class,
             FilamentExportServiceProvider::class,
         ];
     }
