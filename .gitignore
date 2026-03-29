@@ -11,3 +11,5 @@ pnpm-lock.yaml
 *.swo
 .DS_Store
 Thumbs.db
+
+.claude/settings.local.json
