@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Filament\Tables\Columns\TextColumn;
 use JeffersonGoncalves\FilamentExportAction\Actions\FilamentExportBulkAction;
 use JeffersonGoncalves\FilamentExportAction\Actions\FilamentExportHeaderAction;
 use JeffersonGoncalves\FilamentExportAction\Enums\ExportFormat;
@@ -369,7 +370,7 @@ it('bulk action reads disable_file_name from config', function () {
 // --- withColumns (extra Column objects) ---
 
 it('can add extra columns via withColumns', function () {
-    $column = \Filament\Tables\Columns\TextColumn::make('custom_field')
+    $column = TextColumn::make('custom_field')
         ->label('Custom');
 
     $action = FilamentExportHeaderAction::make('export')

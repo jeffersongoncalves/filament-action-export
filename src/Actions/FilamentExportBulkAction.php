@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JeffersonGoncalves\FilamentExportAction\Actions;
 
 use Filament\Actions\BulkAction;
+use Filament\Tables\Contracts\HasTable;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\CanRefreshTable;
@@ -24,6 +25,7 @@ use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasTableDataExport;
 use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasUniqueActionId;
 use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasWriterCallbacks;
 use JeffersonGoncalves\FilamentExportAction\Enums\ExportFormat;
+use Livewire\Component;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class FilamentExportBulkAction extends BulkAction
@@ -52,7 +54,7 @@ class FilamentExportBulkAction extends BulkAction
 
     public function getRecords(): \Illuminate\Support\Collection
     {
-        /** @var \Filament\Tables\Contracts\HasTable&\Livewire\Component $livewire */
+        /** @var HasTable&Component $livewire */
         $livewire = $this->getLivewire();
 
         return collect($livewire->getSelectedTableRecords());
