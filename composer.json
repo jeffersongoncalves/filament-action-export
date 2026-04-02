@@ -15,8 +15,8 @@
         "larastan/larastan": "^3.0",
         "laravel/pint": "^1.21",
         "orchestra/testbench": "^9.0|^10.0|^11.0",
-        "pestphp/pest": "^3.0",
-        "pestphp/pest-plugin-laravel": "^3.0"
+        "pestphp/pest": "^3.0|^4.0",
+        "pestphp/pest-plugin-laravel": "^3.0|^4.0"
     },
     "suggest": {
         "barryvdh/laravel-snappy": "Required for Snappy PDF driver support."
