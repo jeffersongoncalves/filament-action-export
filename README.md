@@ -1,6 +1,6 @@
 <div class="filament-hidden">
 
-![Filament Action Export](https://raw.githubusercontent.com/jeffersongoncalves/filament-action-export/2.x/art/jeffersongoncalves-filament-action-export.jpg)
+![Filament Action Export](https://raw.githubusercontent.com/jeffersongoncalves/filament-action-export/2.x/art/jeffersongoncalves-filament-action-export.png)
 
 </div>
 
