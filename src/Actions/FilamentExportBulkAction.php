@@ -8,44 +8,14 @@ use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Contracts\HasTable;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
-use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\CanRefreshTable;
-use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasAdditionalColumns;
-use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasCsvDelimiter;
-use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasDirectDownload;
-use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasExportColumns;
-use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasExportFormats;
-use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasExtraViewData;
-use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasFilename;
-use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasFormatStates;
-use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasPageOrientation;
-use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasPaginator;
-use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasPdfDriver;
-use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasPreview;
-use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasTableDataExport;
-use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasUniqueActionId;
-use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\HasWriterCallbacks;
+use JeffersonGoncalves\FilamentExportAction\Actions\Concerns\InteractsWithExportAction;
 use JeffersonGoncalves\FilamentExportAction\Enums\ExportFormat;
 use Livewire\Component;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class FilamentExportBulkAction extends BulkAction
 {
-    use CanRefreshTable;
-    use HasAdditionalColumns;
-    use HasCsvDelimiter;
-    use HasDirectDownload;
-    use HasExportColumns;
-    use HasExportFormats;
-    use HasExtraViewData;
-    use HasFilename;
-    use HasFormatStates;
-    use HasPageOrientation;
-    use HasPaginator;
-    use HasPdfDriver;
-    use HasPreview;
-    use HasTableDataExport;
-    use HasUniqueActionId;
-    use HasWriterCallbacks;
+    use InteractsWithExportAction;
 
     public static function getDefaultName(): ?string
     {
@@ -66,16 +36,7 @@ class FilamentExportBulkAction extends BulkAction
 
         $this->uniqueActionId('bulk-action');
 
-        // Apply config defaults
-        $this->timeFormat(config('filament-action-export.time_format', 'Y-m-d_H-i'));
-        $this->disableFileName(config('filament-action-export.disable_file_name', false));
-        $this->disableFileNamePrefix(config('filament-action-export.disable_file_name_prefix', false));
-        $this->disableAdditionalColumns(config('filament-action-export.disable_additional_columns', false));
-        $this->disableFilterColumns(config('filament-action-export.disable_filter_columns', false));
-
-        if (config('filament-action-export.use_snappy', false)) {
-            $this->snappy();
-        }
+        $this->applyExportConfigDefaults();
 
         $this->label(__('filament-action-export::filament-action-export.actions.export'))
             ->modalHeading(__('filament-action-export::filament-action-export.modal.heading'))
