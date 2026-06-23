@@ -95,11 +95,9 @@ class FilamentExportHeaderAction extends Action
             return $this->applyModifyQueryCallbacks($livewire->getFilteredSortedTableQuery());
         }
 
-        if ($this->withFilters || $this->withSearch) {
-            return $this->applyModifyQueryCallbacks($livewire->getFilteredTableQuery());
-        }
-
-        return $this->applyModifyQueryCallbacks($query);
+        // Only withFilters/withSearch can remain (all-false and withSort
+        // already returned above).
+        return $this->applyModifyQueryCallbacks($livewire->getFilteredTableQuery());
     }
 
     public function getRecords(): Collection
