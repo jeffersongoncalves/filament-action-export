@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## 3.7.0 - 2026-06-23
+
+Extract `InteractsWithExportAction` trait — single-sources the 16 shared concerns and config defaults across the header and bulk export actions. No behavior change.
+
 ## v3.6.12 - 2026-03-08
 
 ### Fixed
