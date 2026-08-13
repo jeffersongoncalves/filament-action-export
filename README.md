@@ -43,7 +43,7 @@ php artisan vendor:publish --tag=filament-action-export-views
 ### Publish translations (optional)
 
 ```bash
-php artisan vendor:publish --tag=filament-action-export-lang
+php artisan vendor:publish --tag=filament-action-export-translations
 ```
 
 ## Usage
