@@ -7,6 +7,9 @@ updates:
     target-branch: 3.x
     schedule:
       interval: weekly
+    ignore:
+      - dependency-name: "filament/filament"
+        update-types: ["version-update:semver-major"]
     groups:
       all-composer:
         patterns: ["*"]
@@ -16,6 +19,9 @@ updates:
     target-branch: 2.x
     schedule:
       interval: weekly
+    ignore:
+      - dependency-name: "filament/filament"
+        update-types: ["version-update:semver-major"]
     groups:
       all-composer:
         patterns: ["*"]
@@ -25,6 +31,9 @@ updates:
     target-branch: 1.x
     schedule:
       interval: weekly
+    ignore:
+      - dependency-name: "filament/filament"
+        update-types: ["version-update:semver-major"]
     groups:
       all-composer:
         patterns: ["*"]
