@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2.7.1 - 2026-09-22
+
+### What's changed
+
+- `barryvdh/laravel-dompdf` now requires `^3.0` — `dompdf/dompdf` 2.x is covered by security advisories and blocked by Composer (#9)
+- Test suite now runs on PHP 8.4 + Laravel 13 (testbench ^11, Pest ^4)
+
+**Full Changelog**: https://github.com/jeffersongoncalves/filament-action-export/compare/2.7.0...2.7.1
+
 ## 2.7.0 - 2026-06-23
 
 Extract `InteractsWithExportAction` trait — single-sources the 16 shared concerns and config defaults across the header and bulk export actions. No behavior change.
