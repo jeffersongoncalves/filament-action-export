@@ -1,0 +1,57 @@
+# Dependabot only reads this file from the default branch (3.x),
+# so every version branch is listed here via target-branch.
+version: 2
+updates:
+  - package-ecosystem: composer
+    directory: /
+    target-branch: 3.x
+    schedule:
+      interval: weekly
+    groups:
+      all-composer:
+        patterns: ["*"]
+
+  - package-ecosystem: composer
+    directory: /
+    target-branch: 2.x
+    schedule:
+      interval: weekly
+    groups:
+      all-composer:
+        patterns: ["*"]
+
+  - package-ecosystem: composer
+    directory: /
+    target-branch: 1.x
+    schedule:
+      interval: weekly
+    groups:
+      all-composer:
+        patterns: ["*"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: 3.x
+    schedule:
+      interval: weekly
+    groups:
+      all-actions:
+        patterns: ["*"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: 2.x
+    schedule:
+      interval: weekly
+    groups:
+      all-actions:
+        patterns: ["*"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: 1.x
+    schedule:
+      interval: weekly
+    groups:
+      all-actions:
+        patterns: ["*"]
