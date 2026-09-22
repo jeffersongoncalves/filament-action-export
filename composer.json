@@ -6,7 +6,7 @@
     "keywords": ["filament", "export", "csv", "xlsx", "pdf", "laravel", "livewire"],
     "require": {
         "php": "^8.1",
-        "barryvdh/laravel-dompdf": "^2.0",
+        "barryvdh/laravel-dompdf": "^3.0",
         "filament/filament": "^3.0",
         "spatie/laravel-package-tools": "^1.13",
         "spatie/simple-excel": "^3.0"
