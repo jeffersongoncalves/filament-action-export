@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## 3.8.0 - 2026-09-23
+
+### What's new
+
+- **Translations:** 10 new locales (az, fa, hi, ja, pl, pt, ru, uk, uz, zh_CN). (#29)
+
+Thanks to @Elvin-Qulizade (Elvin Qulizada) for the i18n initiative behind these translations — first contributed in jeffersongoncalves/filament-scanner-guard#2 and now rolled out across the Filament plugins. He is credited as co-author.
+
+### What's Changed
+
+* chore(deps): bump the all-actions group with 2 updates by @dependabot[bot] in https://github.com/jeffersongoncalves/filament-action-export/pull/14
+* ci: standardize dependabot config by @jeffersongoncalves in https://github.com/jeffersongoncalves/filament-action-export/pull/20
+* chore(deps-dev): bump the npm-deps group with 3 updates by @dependabot[bot] in https://github.com/jeffersongoncalves/filament-action-export/pull/23
+* ci: standardize tests workflow (3.x) by @jeffersongoncalves in https://github.com/jeffersongoncalves/filament-action-export/pull/26
+* feat(i18n): add translations (3.x) by @jeffersongoncalves in https://github.com/jeffersongoncalves/filament-action-export/pull/29
+
+**Full Changelog**: https://github.com/jeffersongoncalves/filament-action-export/compare/3.7.1...3.8.0
+
 ## 3.7.1 - 2026-09-22
 
 ### What's changed
