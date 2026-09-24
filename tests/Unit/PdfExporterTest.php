@@ -93,6 +93,26 @@ it('keeps portrait when auto landscape is disabled', function () {
     expect($pageWidth)->toBeLessThan(600); // A4 portrait = 595.28pt
 });
 
+it('lets pdf options disable auto landscape over the config', function () {
+    expect((new PdfExporter)->isWide(8))->toBeTrue();
+    expect((new PdfExporter)->isWide(6))->toBeFalse();
+    expect((new PdfExporter)->pdfOptions(['auto_landscape_columns' => null])->isWide(8))->toBeFalse();
+    expect((new PdfExporter)->pdfOptions(['auto_landscape_columns' => 10])->isWide(8))->toBeFalse();
+});
+
+it('renders the print view with wrapping cells and landscape page when compact', function () {
+    $render = fn (bool $compact) => view('filament-action-export::print', [
+        'columns' => ['hash' => 'Hash'],
+        'records' => [['hash' => hash('sha256', 'ip')]],
+        'compact' => $compact,
+    ])->render();
+
+    expect($render(false))
+        ->toContain('overflow-wrap: anywhere')
+        ->not->toContain('size: landscape');
+    expect($render(true))->toContain('size: landscape');
+});
+
 it('accepts custom pdf options', function () {
     $records = collect([['name' => 'Alice']]);
     $columns = ['name' => 'Nome'];

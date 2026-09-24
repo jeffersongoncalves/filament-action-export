@@ -35,6 +35,10 @@
     border: 1px solid var(--gray-200, #e5e7eb);
 }
 
+.fi-export-preview-wrapper {
+    overflow-x: auto;
+}
+
 .fi-export-table {
     min-width: 100%;
     border-collapse: collapse;
@@ -67,7 +71,7 @@
 }
 
 .fi-export-table td {
-    white-space: nowrap;
+    overflow-wrap: anywhere;
     padding: 0.75rem 1rem;
     color: var(--gray-700, #374151);
 }

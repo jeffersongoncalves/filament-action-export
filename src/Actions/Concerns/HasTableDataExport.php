@@ -217,6 +217,7 @@ trait HasTableDataExport
             'columns' => $columns,
             'records' => $formattedRows,
             'title' => $this->getTable()->getHeading() ?? 'Export',
+            'compact' => (new PdfExporter)->pdfOptions($this->getPdfOptions())->isWide(count($columns)),
         ])->render();
     }
 
