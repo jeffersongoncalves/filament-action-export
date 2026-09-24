@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.8.0 - 2026-09-24
+
+### What's new
+
+- **PDF export no longer cuts off data:** long values without spaces (hashes, tokens, URLs) now wrap inside their cell instead of pushing the table past the page edge. (#37)
+- **Preview & print:** the same wrapping applies to the preview modal and the print view; the preview scrolls horizontally as a fallback. (#37)
+- **Auto landscape:** tables with more than `pdf_options.auto_landscape_columns` columns (default `6`) switch to landscape with a compact font in PDF and print. Set it to `null` in the config or via `->pdfOptions(['auto_landscape_columns' => null])` to disable.
+
+### What's Changed
+
+* ci: standardize tests workflow (1.x) by @jeffersongoncalves in https://github.com/jeffersongoncalves/filament-action-export/pull/30
+* ci: run Pint on PHP 8.4 (1.x) by @jeffersongoncalves in https://github.com/jeffersongoncalves/filament-action-export/pull/33
+* fix: keep PDF, preview and print tables within page width (1.x) by @jeffersongoncalves in https://github.com/jeffersongoncalves/filament-action-export/pull/37
+
+**Full Changelog**: https://github.com/jeffersongoncalves/filament-action-export/compare/1.7.0...1.8.0
+
 ## 1.7.0 - 2026-09-23
 
 ### What's new
