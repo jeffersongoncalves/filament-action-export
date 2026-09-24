@@ -235,7 +235,12 @@ composer require barryvdh/laravel-snappy
 ```php
 // Set default page orientation for PDF export
 ->defaultPageOrientation('landscape')  // Default: 'portrait'
+
+// Tables with more than N columns switch to landscape with a smaller font (default: 6, null disables)
+->pdfOptions(['auto_landscape_columns' => 8])
 ```
+
+Long values without spaces (hashes, URLs, tokens) wrap inside their cell instead of overflowing the page.
 
 ### Preview & Print
 
@@ -310,6 +315,7 @@ return [
     'pdf_options'               => [
         'paper'       => 'a4',
         'orientation' => 'portrait',
+        'auto_landscape_columns' => 6,
     ],
     'preview_enabled'           => true,
     'print_enabled'             => true,
