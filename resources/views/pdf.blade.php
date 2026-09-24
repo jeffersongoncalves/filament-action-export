@@ -9,11 +9,16 @@
             font-family: Arial, Helvetica, sans-serif;
             font-size: 12px;
             color: #333;
-            margin: 20px;
+            margin: 0;
         }
         table {
             width: 100%;
             border-collapse: collapse;
+            table-layout: fixed;
+        }
+        th, td {
+            overflow-wrap: anywhere;
+            word-break: break-word;
         }
         th {
             background-color: #f3f4f6;
@@ -32,6 +37,12 @@
         tr:nth-child(even) {
             background-color: #f9fafb;
         }
+        @if ($compact ?? false)
+        th, td {
+            padding: 4px 6px;
+            font-size: 9px;
+        }
+        @endif
     </style>
 </head>
 <body>
