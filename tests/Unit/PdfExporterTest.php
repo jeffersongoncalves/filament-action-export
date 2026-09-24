@@ -38,6 +38,81 @@ it('accepts extra view data', function () {
     expect($response)->toBeInstanceOf(StreamedResponse::class);
 });
 
+function renderedPdfTable(array $columns, array $row): array
+{
+    $left = INF;
+    $right = 0;
+    $pageWidth = null;
+
+    (new PdfExporter)
+        ->modifyWriter(function ($pdf) use (&$left, &$right, &$pageWidth) {
+            $pdf->getDomPDF()->setCallbacks([[
+                'event' => 'end_frame',
+                'f' => function ($frame, $canvas) use (&$left, &$right, &$pageWidth) {
+                    $pageWidth = $canvas->get_width();
+
+                    if (in_array($frame->get_node()->nodeName, ['th', 'td'], true)) {
+                        [$x, , $width] = $frame->get_border_box();
+                        $left = min($left, $x);
+                        $right = max($right, $x + $width);
+                    }
+                },
+            ]]);
+        })
+        ->export(collect([$row]), $columns, 'test');
+
+    // Content must stay within the printable area (page width minus the symmetric side margin).
+    return [$right, $pageWidth, $pageWidth - $left];
+}
+
+it('keeps long unbreakable values inside the page width', function () {
+    $columns = ['hash' => 'Hash do IP', 'reason' => 'Motivo', 'value' => 'Valor correspondido', 'count' => 'Ocorrências'];
+    $row = ['hash' => hash('sha256', 'ip'), 'reason' => 'Lista de Bloqueio de ASN', 'value' => 'AS16276', 'count' => 1];
+
+    [$contentRight, , $printableRight] = renderedPdfTable($columns, $row);
+
+    expect($contentRight)->toBeLessThanOrEqual($printableRight);
+});
+
+it('switches to landscape when there are many columns', function () {
+    $columns = collect(range(1, 8))->mapWithKeys(fn ($i) => ["c{$i}" => "Column {$i}"])->all();
+    $row = collect(range(1, 8))->mapWithKeys(fn ($i) => ["c{$i}" => "value {$i}"])->all();
+
+    [, $pageWidth] = renderedPdfTable($columns, $row);
+
+    expect($pageWidth)->toBeGreaterThan(800); // A4 landscape = 841.89pt
+});
+
+it('keeps portrait when auto landscape is disabled', function () {
+    config()->set('filament-action-export.pdf_options.auto_landscape_columns', null);
+    $columns = collect(range(1, 8))->mapWithKeys(fn ($i) => ["c{$i}" => "Column {$i}"])->all();
+    $row = collect(range(1, 8))->mapWithKeys(fn ($i) => ["c{$i}" => "value {$i}"])->all();
+
+    [, $pageWidth] = renderedPdfTable($columns, $row);
+
+    expect($pageWidth)->toBeLessThan(600); // A4 portrait = 595.28pt
+});
+
+it('lets pdf options disable auto landscape over the config', function () {
+    expect((new PdfExporter)->isWide(8))->toBeTrue();
+    expect((new PdfExporter)->isWide(6))->toBeFalse();
+    expect((new PdfExporter)->pdfOptions(['auto_landscape_columns' => null])->isWide(8))->toBeFalse();
+    expect((new PdfExporter)->pdfOptions(['auto_landscape_columns' => 10])->isWide(8))->toBeFalse();
+});
+
+it('renders the print view with wrapping cells and landscape page when compact', function () {
+    $render = fn (bool $compact) => view('filament-action-export::print', [
+        'columns' => ['hash' => 'Hash'],
+        'records' => [['hash' => hash('sha256', 'ip')]],
+        'compact' => $compact,
+    ])->render();
+
+    expect($render(false))
+        ->toContain('overflow-wrap: anywhere')
+        ->not->toContain('size: landscape');
+    expect($render(true))->toContain('size: landscape');
+});
+
 it('accepts custom pdf options', function () {
     $records = collect([['name' => 'Alice']]);
     $columns = ['name' => 'Nome'];

@@ -15,6 +15,10 @@
             width: 100%;
             border-collapse: collapse;
         }
+        th, td {
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
         th {
             background-color: #f3f4f6;
             border: 1px solid #d1d5db;
@@ -37,6 +41,15 @@
                 margin: 0;
             }
         }
+        @if ($compact ?? false)
+        @page {
+            size: landscape;
+        }
+        th, td {
+            padding: 4px 6px;
+            font-size: 9px;
+        }
+        @endif
     </style>
 </head>
 <body>
