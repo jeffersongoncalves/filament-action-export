@@ -53,16 +53,30 @@ class PdfExporter implements Exporter
         return $this;
     }
 
+    /** Whether the table has too many columns for portrait and should use landscape with a compact font. */
+    public function isWide(int $columnCount): bool
+    {
+        $threshold = array_key_exists('auto_landscape_columns', $this->pdfOptions)
+            ? $this->pdfOptions['auto_landscape_columns']
+            : config('filament-action-export.pdf_options.auto_landscape_columns', 6);
+
+        return $threshold !== null && $columnCount > $threshold;
+    }
+
     /** @param array<string, string> $columns */
     public function export(Collection $records, array $columns, string $filename): StreamedResponse
     {
+        $wide = $this->isWide(count($columns));
+
         $html = view('filament-action-export::pdf', array_merge(
-            ['records' => $records, 'columns' => $columns, 'title' => $filename],
+            ['records' => $records, 'columns' => $columns, 'title' => $filename, 'compact' => $wide],
             $this->extraViewData,
         ))->render();
 
         $paper = $this->pdfOptions['paper'] ?? config('filament-action-export.pdf_options.paper', 'a4');
-        $orientation = $this->pdfOptions['orientation'] ?? config('filament-action-export.pdf_options.orientation', 'portrait');
+        $orientation = $wide
+            ? 'landscape'
+            : $this->pdfOptions['orientation'] ?? config('filament-action-export.pdf_options.orientation', 'portrait');
 
         if ($this->driver === 'snappy' && class_exists(SnappyPdf::class)) {
             $pdf = SnappyPdf::loadHTML($html)
