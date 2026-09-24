@@ -10,6 +10,8 @@ return [
     'pdf_options' => [
         'paper' => 'a4',
         'orientation' => 'portrait',
+        // Above this many columns the PDF switches to landscape with a smaller font. Set null to disable.
+        'auto_landscape_columns' => 6,
     ],
     'preview_enabled' => true,
     'print_enabled' => true,
