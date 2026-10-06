@@ -10,6 +10,5 @@ composer.lock
 *.swo
 .DS_Store
 Thumbs.db
-pnpm-lock.yaml
 
 .claude/settings.local.json
