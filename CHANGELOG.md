@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 1.8.1 - 2026-11-05
+
+### Fixed
+
+- `TableView::make()` no longer throws `BadMethodCallException: Method TableView::name does not exist` on Filament 3 when opening the export modal with preview enabled (#67, #68). Thanks @dagalumin!
+
 ## 1.8.0 - 2026-09-24
 
 ### What's new
